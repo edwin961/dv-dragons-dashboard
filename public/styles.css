@@ -15,7 +15,6 @@
     --shadow: rgba(0, 0, 0, 0.25);
 }
 
-/* ======== BASE ======== */
 * {
     margin: 0;
     padding: 0;
@@ -33,7 +32,7 @@ body {
     overflow-x: hidden;
 }
 
-/* ======== FONDO ======== */
+/* Fondo con imagen */
 body::before {
     content: "";
     position: fixed;
@@ -49,7 +48,7 @@ body::before {
     z-index: -1;
 }
 
-/* ======== NAVBAR ======== */
+/* Navbar */
 .navbar {
     background-color: rgba(36, 39, 58, 0.95);
     backdrop-filter: blur(10px);
@@ -105,7 +104,7 @@ body::before {
     color: var(--text-light);
 }
 
-/* ======== HERO ======== */
+/* Hero Section */
 .hero {
     flex: 1;
     display: flex;
@@ -121,8 +120,14 @@ body::before {
 }
 
 @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .hero h1 {
@@ -161,9 +166,9 @@ body::before {
     box-shadow: 0 6px 20px rgba(88, 101, 242, 0.4);
 }
 
-/* ======== DASHBOARD ======== */
+/* Dashboard Container */
 .dashboard-container {
-    max-width: 1300px;
+    max-width: 1200px;
     margin: 3rem auto;
     padding: 2rem;
     flex: 1;
@@ -171,6 +176,7 @@ body::before {
 
 .dashboard-container h1 {
     font-size: 2.5rem;
+    color: var(--text-light);
     text-align: center;
     margin-bottom: 0.5rem;
 }
@@ -182,48 +188,293 @@ body::before {
     margin-bottom: 3rem;
 }
 
-/* ======== NUEVO GRID DE SERVIDORES ======== */
+/* Servers Grid */
+.servers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.server-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.server-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px var(--shadow);
+    border-color: var(--accent);
+}
+
+.server-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.server-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.server-info h3 {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.server-id {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-family: 'Courier New', monospace;
+}
+
+.config-btn {
+    background-color: var(--discord-blue);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    transition: background-color 0.3s ease;
+}
+
+.config-btn:hover {
+    background-color: var(--discord-blue-hover);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-medium);
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+}
+
+/* Config Container */
+.config-container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 2rem;
+    flex: 1;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-medium);
+    text-decoration: none;
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+    transition: color 0.3s ease;
+}
+
+.back-link:hover {
+    color: var(--text-light);
+}
+
+.config-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.config-header h1 {
+    font-size: 2.25rem;
+    color: var(--text-light);
+    margin-bottom: 0.75rem;
+}
+
+.server-id-badge {
+    display: inline-block;
+    background-color: var(--bg-card);
+    color: var(--text-medium);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-family: 'Courier New', monospace;
+    border: 1px solid var(--border-color);
+}
+
+.config-section h2 {
+    font-size: 1.5rem;
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+}
+
+.config-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+}
+
+.option-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.option-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px var(--shadow);
+    border-color: var(--accent);
+}
+
+.option-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.option-card h3 {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+}
+
+.option-card p {
+    color: var(--text-medium);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--bg-medium);
+    text-align: center;
+    padding: 1.5rem;
+    margin-top: auto;
+    border-top: 1px solid var(--border-color);
+}
+
+.footer p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 1rem 1.5rem;
+    }
+
+    .navbar .nav-links {
+        display: none;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero p {
+        font-size: 1.1rem;
+    }
+
+    .dashboard-container,
+    .config-container {
+        padding: 1.5rem;
+        margin: 2rem 1rem;
+    }
+
+    .servers-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .server-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .server-info h3 {
+        white-space: normal;
+    }
+
+    .config-btn {
+        width: 100%;
+    }
+
+    .config-options {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .dashboard-container h1 {
+        font-size: 2rem;
+    }
+
+    .discord-button {
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+/* ======== NUEVO DISEÑO SERVERS DASHBOARD ======== */
+
 .servers-modern-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    justify-content: center;
-    align-items: stretch;
-    padding: 2rem 0;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem 0;
 }
 
 .server-card-modern {
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 15px;
-    padding: 1.5rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: space-between;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 .server-card-modern:hover {
-    transform: translateY(-4px);
+    transform: translateY(-3px);
     border-color: var(--accent);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.35);
 }
 
 .server-modern-icon {
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     object-fit: cover;
-    margin-bottom: 1rem;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.server-modern-info {
+    flex: 1;
+    overflow: hidden;
 }
 
 .server-modern-info h3 {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     color: var(--text-light);
-    margin-bottom: 0.3rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -232,31 +483,29 @@ body::before {
 .server-modern-info p {
     color: var(--text-medium);
     font-size: 0.9rem;
-    margin-bottom: 1rem;
 }
 
 .server-modern-btn {
-    background-color: var(--discord-blue);
-    color: #fff;
-    border: none;
+    background-color: var(--bg-medium);
+    color: var(--text-light);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
-    padding: 0.6rem 1rem;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-decoration: none;
+    font-size: 1.5rem;
     font-weight: 600;
-    font-size: 1rem;
     transition: all 0.3s ease;
 }
 
 .server-modern-btn:hover {
-    background-color: var(--discord-blue-hover);
+    background-color: var(--discord-blue);
+    color: #fff;
+    border-color: var(--discord-blue);
     transform: scale(1.05);
-}
-
-/* ======== ESTADOS VACÍOS ======== */
-.empty-state {
-    text-align: center;
-    padding: 4rem 2rem;
-    color: var(--text-medium);
 }
 
 .refresh-container {
@@ -280,36 +529,4 @@ body::before {
     background-color: var(--discord-blue);
     color: #fff;
     border-color: var(--discord-blue);
-}
-
-/* ======== FOOTER ======== */
-.footer {
-    background-color: var(--bg-medium);
-    text-align: center;
-    padding: 1.5rem;
-    margin-top: auto;
-    border-top: 1px solid var(--border-color);
-}
-
-.footer p {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-}
-
-/* ======== RESPONSIVE ======== */
-@media (max-width: 768px) {
-    .servers-modern-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.2rem;
-    }
-
-    .server-modern-icon {
-        width: 65px;
-        height: 65px;
-    }
-
-    .server-modern-btn {
-        font-size: 0.9rem;
-        padding: 0.5rem 0.9rem;
-    }
 }
