@@ -431,3 +431,102 @@ body::before {
         font-size: 1rem;
     }
 }
+/* ======== NUEVO DISEÑO SERVERS DASHBOARD ======== */
+
+.servers-modern-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem 0;
+}
+
+.server-card-modern {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.server-card-modern:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.35);
+}
+
+.server-modern-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.server-modern-info {
+    flex: 1;
+    overflow: hidden;
+}
+
+.server-modern-info h3 {
+    font-size: 1.05rem;
+    color: var(--text-light);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.server-modern-info p {
+    color: var(--text-medium);
+    font-size: 0.9rem;
+}
+
+.server-modern-btn {
+    background-color: var(--bg-medium);
+    color: var(--text-light);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.server-modern-btn:hover {
+    background-color: var(--discord-blue);
+    color: #fff;
+    border-color: var(--discord-blue);
+    transform: scale(1.05);
+}
+
+.refresh-container {
+    text-align: center;
+    margin-top: 2rem;
+    color: var(--text-medium);
+}
+
+.refresh-btn {
+    background-color: var(--bg-card);
+    color: var(--text-light);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.5rem 1.25rem;
+    margin-top: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.refresh-btn:hover {
+    background-color: var(--discord-blue);
+    color: #fff;
+    border-color: var(--discord-blue);
+}
