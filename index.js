@@ -14,7 +14,7 @@ const { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } = process.env;
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 
-// 🌐 Inicio (sin cambios)
+// 🌐 Página principal
 app.get("/", (req, res) => {
   const discordAuthUrl = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(
     REDIRECT_URI
@@ -63,12 +63,13 @@ app.get("/", (req, res) => {
   `);
 });
 
-// 🔑 Callback (actualizado con diseño moderno)
+// 🔑 Callback mejorado con manejo de errores y redirección
 app.get("/callback", async (req, res) => {
   const code = req.query.code;
   if (!code) return res.status(400).send("⚠️ Faltó el código de autorización.");
 
   try {
+    // Intercambiar el code por el access_token
     const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -82,81 +83,109 @@ app.get("/callback", async (req, res) => {
     });
 
     const tokenData = await tokenResponse.json();
-    if (tokenData.error) return res.status(500).send("Error al obtener token.");
+    console.log("🔍 Respuesta del token:", tokenData);
+
+    // Si Discord devuelve error
+    if (tokenData.error) {
+      return res
+        .status(500)
+        .send(
+          `Error al obtener token: ${tokenData.error_description || tokenData.error}`
+        );
+    }
 
     const accessToken = tokenData.access_token;
+
+    // Obtener los servidores del usuario
     const guildsResponse = await fetch("https://discord.com/api/users/@me/guilds", {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
+
     const guildsData = await guildsResponse.json();
 
+    if (!Array.isArray(guildsData)) {
+      console.error("⚠️ Error al obtener guilds:", guildsData);
+      return res.status(500).send("Error al obtener tus servidores de Discord.");
+    }
+
+    // Filtrar servidores con permiso de administrar
     const MANAGE_GUILD_PERMISSION = 32;
     const adminGuilds = guildsData.filter(
       (g) => (parseInt(g.permissions) & MANAGE_GUILD_PERMISSION) === MANAGE_GUILD_PERMISSION
     );
 
-    // 🔹 Grid moderno estilo imagen
-    const guildListHTML =
-      adminGuilds.length > 0
-        ? `<div class="servers-modern-grid">
-            ${adminGuilds
-              .map((g) => {
-                const icon = g.icon
-                  ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png`
-                  : "/icono.png";
-                const role = g.owner ? "Owner" : "Admin";
-                return `
-                  <div class="server-card-modern">
-                    <img class="server-modern-icon" src="${icon}" alt="${g.name}" />
-                    <div class="server-modern-info">
-                      <h3>${g.name}</h3>
-                      <p>${role}</p>
-                    </div>
-                    <a href="/dashboard/${g.id}" class="server-modern-btn">+</a>
-                  </div>
-                `;
-              })
-              .join("")}
-          </div>`
-        : `<div class="empty-state"><p>No tienes servidores con permiso "Administrar Servidor".</p></div>`;
+    // Guardar datos temporalmente en memoria
+    req.app.locals.guildsData = adminGuilds;
 
-    res.send(`
-      <!DOCTYPE html>
-      <html lang="es">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Manage Servers - DV Dragons</title>
-        <link rel="stylesheet" href="/styles.css">
-      </head>
-      <body>
-        <div class="navbar">
-          <a href="/" class="logo">
-            <img src="/icono.png" alt="Logo">
-            <span>DV Dragons Bot</span>
-          </a>
-        </div>
-
-        <div class="dashboard-container">
-          <h1>Manejar servers</h1>
-          <p class="subtitle">Seleccione un servidor a continuación para administrarlo.</p>
-          ${guildListHTML}
-          <div class="refresh-container">
-            <p>¿Falta un servidor?</p>
-            <button class="refresh-btn" onclick="location.reload()">↻ Refrezcar</button>
-          </div>
-        </div>
-
-        <footer class="footer">
-          <p>© 2025 DV Dragons Bot. Todos los derechos reservados.</p>
-        </footer>
-      </body>
-      </html>
-    `);
+    // Redirigir a la nueva página /servers
+    res.redirect("/servers");
   } catch (err) {
-    console.error("Error en callback:", err);
-    res.status(500).send("Ocurrió un error en el servidor.");
+    console.error("❌ Error en /callback:", err);
+    res.status(500).send("Ocurrió un error interno al procesar la autenticación.");
   }
+});
+
+// 🧭 Nueva ruta /servers (corrige error al refrescar)
+app.get("/servers", (req, res) => {
+  const guildsData = req.app.locals.guildsData || [];
+
+  const guildListHTML =
+    guildsData.length > 0
+      ? `<div class="servers-modern-grid">
+          ${guildsData
+            .map((g) => {
+              const icon = g.icon
+                ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png`
+                : "/icono.png";
+              const role = g.owner ? "Owner" : "Admin";
+              return `
+                <div class="server-card-modern">
+                  <img class="server-modern-icon" src="${icon}" alt="${g.name}" />
+                  <div class="server-modern-info">
+                    <h3>${g.name}</h3>
+                    <p>${role}</p>
+                  </div>
+                  <a href="/dashboard/${g.id}" class="server-modern-btn">+</a>
+                </div>
+              `;
+            })
+            .join("")}
+        </div>`
+      : `<div class="empty-state"><p>No tienes servidores con permiso "Administrar Servidor".</p></div>`;
+
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Manage Servers - DV Dragons</title>
+      <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+      <div class="navbar">
+        <a href="/" class="logo">
+          <img src="/icono.png" alt="Logo">
+          <span>DV Dragons Bot</span>
+        </a>
+      </div>
+
+      <div class="dashboard-container">
+        <h1>Manejar servidores</h1>
+        <p class="subtitle">Selecciona un servidor para administrarlo.</p>
+        ${guildListHTML}
+        <div class="refresh-container">
+          <p>¿Falta un servidor?</p>
+          <button class="refresh-btn" onclick="location.reload()">↻ Refrescar</button>
+        </div>
+      </div>
+
+      <footer class="footer">
+        <p>© 2025 DV Dragons Bot. Todos los derechos reservados.</p>
+      </footer>
+    </body>
+    </html>
+  `);
 });
 
 // ⚙️ Dashboard (sin cambios)
@@ -169,6 +198,7 @@ app.get("/dashboard/:guildId", (req, res) => {
   </body></html>`);
 });
 
+// 🚀 Servidor en línea
 app.listen(PORT, () =>
   console.log(`✅ Servidor en línea: http://localhost:${PORT}`)
 );
