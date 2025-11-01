@@ -188,7 +188,7 @@ body::before {
     margin-bottom: 3rem;
 }
 
-/* Servers Grid */
+/* Servers Grid (original - no usado en nueva versión) */
 .servers-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -371,66 +371,6 @@ body::before {
     font-size: 0.9rem;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .navbar {
-        padding: 1rem 1.5rem;
-    }
-
-    .navbar .nav-links {
-        display: none;
-    }
-
-    .hero h1 {
-        font-size: 2.5rem;
-    }
-
-    .hero p {
-        font-size: 1.1rem;
-    }
-
-    .dashboard-container,
-    .config-container {
-        padding: 1.5rem;
-        margin: 2rem 1rem;
-    }
-
-    .servers-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .server-card {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .server-info h3 {
-        white-space: normal;
-    }
-
-    .config-btn {
-        width: 100%;
-    }
-
-    .config-options {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 480px) {
-    .hero h1 {
-        font-size: 2rem;
-    }
-
-    .dashboard-container h1 {
-        font-size: 2rem;
-    }
-
-    .discord-button {
-        padding: 0.875rem 1.5rem;
-        font-size: 1rem;
-    }
-}
 /* ======== NUEVO DISEÑO SERVERS DASHBOARD ======== */
 
 .servers-modern-grid {
@@ -478,6 +418,7 @@ body::before {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-bottom: 0.25rem;
 }
 
 .server-modern-info p {
@@ -499,6 +440,7 @@ body::before {
     font-size: 1.5rem;
     font-weight: 600;
     transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 
 .server-modern-btn:hover {
@@ -523,10 +465,77 @@ body::before {
     margin-top: 0.5rem;
     cursor: pointer;
     transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
 }
 
 .refresh-btn:hover {
     background-color: var(--discord-blue);
     color: #fff;
     border-color: var(--discord-blue);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 1rem 1.5rem;
+    }
+
+    .navbar .nav-links {
+        display: none;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero p {
+        font-size: 1.1rem;
+    }
+
+    .dashboard-container,
+    .config-container {
+        padding: 1.5rem;
+        margin: 2rem 1rem;
+    }
+
+    .servers-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .servers-modern-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .server-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .server-info h3 {
+        white-space: normal;
+    }
+
+    .config-btn {
+        width: 100%;
+    }
+
+    .config-options {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .dashboard-container h1 {
+        font-size: 2rem;
+    }
+
+    .discord-button {
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+    }
 }

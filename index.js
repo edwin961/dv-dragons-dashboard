@@ -63,7 +63,7 @@ app.get("/", (req, res) => {
   `);
 });
 
-// 🔑 Callback (ajustado para cuadrícula de servidores)
+// 🔑 Callback (actualizado con diseño moderno)
 app.get("/callback", async (req, res) => {
   const code = req.query.code;
   if (!code) return res.status(400).send("⚠️ Faltó el código de autorización.");
@@ -95,10 +95,10 @@ app.get("/callback", async (req, res) => {
       (g) => (parseInt(g.permissions) & MANAGE_GUILD_PERMISSION) === MANAGE_GUILD_PERMISSION
     );
 
-    // 🔹 Rejilla moderna tipo dashboard
+    // 🔹 Grid moderno estilo imagen
     const guildListHTML =
       adminGuilds.length > 0
-        ? `<div class="servers-grid">
+        ? `<div class="servers-modern-grid">
             ${adminGuilds
               .map((g) => {
                 const icon = g.icon
@@ -106,17 +106,19 @@ app.get("/callback", async (req, res) => {
                   : "/icono.png";
                 const role = g.owner ? "Owner" : "Admin";
                 return `
-                  <div class="server-card">
-                    <img src="${icon}" alt="${g.name}" />
-                    <h3>${g.name}</h3>
-                    <p>${role}</p>
-                    <button onclick="window.location.href='/dashboard/${g.id}'">Configurar</button>
+                  <div class="server-card-modern">
+                    <img class="server-modern-icon" src="${icon}" alt="${g.name}" />
+                    <div class="server-modern-info">
+                      <h3>${g.name}</h3>
+                      <p>${role}</p>
+                    </div>
+                    <a href="/dashboard/${g.id}" class="server-modern-btn">+</a>
                   </div>
                 `;
               })
               .join("")}
           </div>`
-        : `<div class="empty-state"><p>No tienes servidores con permiso “Administrar Servidor”.</p></div>`;
+        : `<div class="empty-state"><p>No tienes servidores con permiso "Administrar Servidor".</p></div>`;
 
     res.send(`
       <!DOCTYPE html>
@@ -124,7 +126,7 @@ app.get("/callback", async (req, res) => {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Servidores</title>
+        <title>Manage Servers - DV Dragons</title>
         <link rel="stylesheet" href="/styles.css">
       </head>
       <body>
@@ -137,11 +139,11 @@ app.get("/callback", async (req, res) => {
 
         <div class="dashboard-container">
           <h1>Manage Servers</h1>
-          <p class="subtitle">Selecciona un servidor para administrar.</p>
+          <p class="subtitle">Select a server below to manage.</p>
           ${guildListHTML}
           <div class="refresh-container">
-            <p>¿Falta un servidor?</p>
-            <button class="refresh-btn" onclick="location.reload()">↻ Refrescar</button>
+            <p>Missing a server?</p>
+            <button class="refresh-btn" onclick="location.reload()">↻ Refresh</button>
           </div>
         </div>
 
