@@ -63,7 +63,7 @@ app.get("/", (req, res) => {
   `);
 });
 
-// 🔑 Callback (modificado)
+// 🔑 Callback (ajustado para cuadrícula de servidores)
 app.get("/callback", async (req, res) => {
   const code = req.query.code;
   if (!code) return res.status(400).send("⚠️ Faltó el código de autorización.");
@@ -95,9 +95,10 @@ app.get("/callback", async (req, res) => {
       (g) => (parseInt(g.permissions) & MANAGE_GUILD_PERMISSION) === MANAGE_GUILD_PERMISSION
     );
 
+    // 🔹 Rejilla moderna tipo dashboard
     const guildListHTML =
       adminGuilds.length > 0
-        ? `<div class="servers-modern-grid">
+        ? `<div class="servers-grid">
             ${adminGuilds
               .map((g) => {
                 const icon = g.icon
@@ -105,13 +106,11 @@ app.get("/callback", async (req, res) => {
                   : "/icono.png";
                 const role = g.owner ? "Owner" : "Admin";
                 return `
-                  <div class="server-card-modern">
-                    <img src="${icon}" alt="${g.name}" class="server-modern-icon" />
-                    <div class="server-modern-info">
-                      <h3>${g.name}</h3>
-                      <p>${role}</p>
-                    </div>
-                    <a href="/dashboard/${g.id}" class="server-modern-btn">+</a>
+                  <div class="server-card">
+                    <img src="${icon}" alt="${g.name}" />
+                    <h3>${g.name}</h3>
+                    <p>${role}</p>
+                    <button onclick="window.location.href='/dashboard/${g.id}'">Configurar</button>
                   </div>
                 `;
               })
@@ -138,11 +137,11 @@ app.get("/callback", async (req, res) => {
 
         <div class="dashboard-container">
           <h1>Manage Servers</h1>
-          <p class="subtitle">Select a server below to manage.</p>
+          <p class="subtitle">Selecciona un servidor para administrar.</p>
           ${guildListHTML}
           <div class="refresh-container">
-            <p>Missing a server?</p>
-            <button class="refresh-btn" onclick="location.reload()">↻ Refresh</button>
+            <p>¿Falta un servidor?</p>
+            <button class="refresh-btn" onclick="location.reload()">↻ Refrescar</button>
           </div>
         </div>
 
@@ -158,10 +157,14 @@ app.get("/callback", async (req, res) => {
   }
 });
 
-// ⚙️ Resto sin cambios
+// ⚙️ Dashboard (sin cambios)
 app.get("/dashboard/:guildId", (req, res) => {
   const guildId = req.params.guildId;
-  res.send(`...`); // igual que antes
+  res.send(`<!DOCTYPE html>
+  <html><body>
+    <h1>Panel del servidor: ${guildId}</h1>
+    <p>Aquí puedes configurar DV Dragons Bot.</p>
+  </body></html>`);
 });
 
 app.listen(PORT, () =>
