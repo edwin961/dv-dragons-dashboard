@@ -138,12 +138,12 @@ app.get("/callback", async (req, res) => {
         </div>
 
         <div class="dashboard-container">
-          <h1>Manage Servers</h1>
-          <p class="subtitle">Select a server below to manage.</p>
+          <h1>Manejar servers</h1>
+          <p class="subtitle">Seleccione un servidor a continuación para administrarlo.</p>
           ${guildListHTML}
           <div class="refresh-container">
-            <p>Missing a server?</p>
-            <button class="refresh-btn" onclick="location.reload()">↻ Refresh</button>
+            <p>¿Falta un servidor?</p>
+            <button class="refresh-btn" onclick="location.reload()">↻ Refrezcar</button>
           </div>
         </div>
 
