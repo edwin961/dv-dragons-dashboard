@@ -242,7 +242,7 @@ app.get("/dashboard/:guildId", async (req, res) => {
         (c) =>
           `<option value="${c.id}" ${
             c.id === current.canal_id ? "selected" : ""
-          }>#${c.name}</option>`
+          }> #${c.name}</option>`
       )
       .join("");
 
@@ -261,136 +261,91 @@ app.get("/dashboard/:guildId", async (req, res) => {
       </head>
       <body>
         <div class="navbar"><a href="/servers" class="logo"><img src="/icono.png"><span>DV Dragons Bot</span></a></div>
-        <div class="dashboard-container welcome-config">
-          <div class="config-header-modern">
-            <div class="config-icon-dragon">🐉</div>
-            <h1>Mensajes de Bienvenida</h1>
-            <p class="config-subtitle">Configura el mensaje que aparecerá al servicio de Discord.</p>
+        <div class="dashboard-container">
+          <div class="welcome-header">
+            <div class="welcome-icon">🐉</div>
+            <h1>Configuración de Bienvenida</h1>
+            <p class="welcome-subtitle">${guildData.name}</p>
           </div>
-
-          <div class="welcome-form-modern">
-            <!-- CANAL -->
-            <div class="form-group-modern">
-              <label class="form-label-modern">
-                <span class="label-text">CANAL</span>
-                <span class="label-hint">Elige en qué canal de envío el mensaje de bienvenida.</span>
+          
+          <div class="form-card-enhanced">
+            <div class="form-section">
+              <label class="form-label">
+                <span class="label-icon">📢</span>
+                Canal de Bienvenida
               </label>
-              <select id="channel" class="form-select-modern">
-                <option value="">Selecciona un canal...</option>
-                ${channelOptions}
-              </select>
+              <select id="channel" class="form-select">${channelOptions}</select>
             </div>
 
-            <!-- MENSAJE INTEGRADO -->
-            <div class="form-group-modern">
-              <label class="form-label-modern">
-                <span class="label-text">MENSAJE INTEGRADO</span>
+            <div class="form-section">
+              <label class="form-label">
+                <span class="label-icon">✨</span>
+                Encabezado
               </label>
-              <div class="toggle-switch">
-                <input type="checkbox" id="embedToggle" ${current.texto ? 'checked' : ''}>
-                <label for="embedToggle" class="toggle-label"></label>
-              </div>
+              <input id="header" type="text" class="form-input" value="${current.encabezado || ""}" placeholder="Ej: ¡Bienvenido a ${guildData.name}!">
             </div>
 
-            <!-- ENCABEZADO -->
-            <div class="form-group-modern">
-              <label class="form-label-modern">
-                <span class="label-text">ENCABEZADO PERSONALIZADO</span>
-                <span class="label-hint">Este es el primer texto en mayúscula de un mensaje de bienvenida, Este texto aparece en el canal de bienvenida y destaca el nombre del usuario con variables dinámicas. Usa [Usuario] para mencionar al nuevo miembro</span>
+            <div class="form-section">
+              <label class="form-label">
+                <span class="label-icon">💬</span>
+                Mensaje de Bienvenida
               </label>
-              <input type="text" id="header" class="form-input-modern" placeholder="¡[Usuario] llegó al servidor!" value="${current.encabezado || ''}">
-            </div>
-
-            <!-- DESCRIPCIÓN -->
-            <div class="form-group-modern">
-              <label class="form-label-modern">
-                <span class="label-text">DESCRIPCIÓN</span>
-                <span class="label-hint">Puedes usar variables en el mensaje: [Usuario], [Servidor]. Esto es un mensaje que describe el mensaje y contiene los detalles del mensaje. También se llama el "cuerpo" del mensaje. Este desempeño se muestra en el contenido del mensaje de bienvenida</span>
-              </label>
-              <div class="textarea-wrapper-modern">
-                <textarea id="message" rows="6" class="form-textarea-modern" placeholder="¡Bienvenido a [Servidor]! 🎉">${current.texto || ''}</textarea>
-                <div class="textarea-toolbar-modern">
-                  <button type="button" class="toolbar-btn-modern" onclick="togglePicker('emoji')" title="Emojis">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="10" r="1.5"/><circle cx="16" cy="10" r="1.5"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+              <div class="textarea-container">
+                <textarea id="message" rows="5" class="form-textarea" placeholder="Escribe un mensaje cálido para los nuevos miembros...">${current.texto || ""}</textarea>
+                <div class="textarea-toolbar">
+                  <button type="button" class="toolbar-btn" onclick="togglePicker('emoji')" title="Emojis del servidor">
+                    😀
                   </button>
-                  <button type="button" class="toolbar-btn-modern" onclick="togglePicker('channel')" title="Mencionar canal">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.88657 21C5.57547 21 5.3399 20.7189 5.39427 20.4126L6.00001 17H2.59511C2.28449 17 2.04905 16.7198 2.10259 16.4138L2.27759 15.4138C2.31946 15.1746 2.52722 15 2.77011 15H6.35001L7.41001 9H4.00511C3.69449 9 3.45905 8.71977 3.51259 8.41381L3.68759 7.41381C3.72946 7.17456 3.93722 7 4.18011 7H7.76001L8.39677 3.41262C8.43914 3.17391 8.64664 3 8.88907 3H9.87344C10.1845 3 10.4201 3.28107 10.3657 3.58738L9.76001 7H15.76L16.3968 3.41262C16.4391 3.17391 16.6466 3 16.8891 3H17.8734C18.1845 3 18.4201 3.28107 18.3657 3.58738L17.76 7H21.1649C21.4755 7 21.711 7.28023 21.6574 7.58619L21.4824 8.58619C21.4406 8.82544 21.2328 9 20.9899 9H17.41L16.35 15H19.7549C20.0655 15 20.301 15.2802 20.2474 15.5862L20.0724 16.5862C20.0306 16.8254 19.8228 17 19.5799 17H16L15.3632 20.5874C15.3209 20.8261 15.1134 21 14.8709 21H13.8866C13.5755 21 13.3399 20.7189 13.3943 20.4126L14 17H8.00001L7.36325 20.5874C7.32088 20.8261 7.11337 21 6.87094 21H5.88657ZM9.41045 9L8.35045 15H14.3504L15.4104 9H9.41045Z"/></svg>
+                  <button type="button" class="toolbar-btn" onclick="togglePicker('channel')" title="Mencionar canal">
+                    #
                   </button>
-                  <button type="button" class="toolbar-btn-modern" onclick="togglePicker('role')" title="Mencionar rol">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5.5-2.5l7.51-3.49L17.5 6.5 9.99 9.99 6.5 17.5zm5.5-6.6c.61 0 1.1.49 1.1 1.1s-.49 1.1-1.1 1.1-1.1-.49-1.1-1.1.49-1.1 1.1-1.1z"/></svg>
-                  </button>
-                  <button type="button" class="toolbar-btn-modern" onclick="togglePicker('variable')" title="Variables">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+                  <button type="button" class="toolbar-btn" onclick="togglePicker('role')" title="Mencionar rol">
+                    @
                   </button>
                 </div>
               </div>
 
-              <!-- Pickers -->
-              <div id="emojiPicker" class="picker-modern" style="display: none;">
-                <div class="picker-header-modern">
+              <!-- Picker de Emojis -->
+              <div id="emojiPicker" class="picker-container" style="display: none;">
+                <div class="picker-header">
                   <span>Emojis del Servidor</span>
-                  <button type="button" onclick="closePicker('emoji')" class="picker-close-modern">✕</button>
+                  <button type="button" onclick="closePicker('emoji')" class="picker-close">✕</button>
                 </div>
-                <div class="picker-content-modern" id="emojiList"></div>
+                <div class="picker-content" id="emojiList"></div>
               </div>
 
-              <div id="channelPicker" class="picker-modern" style="display: none;">
-                <div class="picker-header-modern">
+              <!-- Picker de Canales -->
+              <div id="channelPicker" class="picker-container" style="display: none;">
+                <div class="picker-header">
                   <span>Mencionar Canal</span>
-                  <button type="button" onclick="closePicker('channel')" class="picker-close-modern">✕</button>
+                  <button type="button" onclick="closePicker('channel')" class="picker-close">✕</button>
                 </div>
-                <div class="picker-content-modern picker-list" id="channelList"></div>
+                <div class="picker-content" id="channelList"></div>
               </div>
 
-              <div id="rolePicker" class="picker-modern" style="display: none;">
-                <div class="picker-header-modern">
+              <!-- Picker de Roles -->
+              <div id="rolePicker" class="picker-container" style="display: none;">
+                <div class="picker-header">
                   <span>Mencionar Rol</span>
-                  <button type="button" onclick="closePicker('role')" class="picker-close-modern">✕</button>
+                  <button type="button" onclick="closePicker('role')" class="picker-close">✕</button>
                 </div>
-                <div class="picker-content-modern picker-list" id="roleList"></div>
-              </div>
-
-              <div id="variablePicker" class="picker-modern" style="display: none;">
-                <div class="picker-header-modern">
-                  <span>Variables Disponibles</span>
-                  <button type="button" onclick="closePicker('variable')" class="picker-close-modern">✕</button>
-                </div>
-                <div class="picker-content-modern picker-list">
-                  <button type="button" class="picker-item-modern picker-text-modern" onclick="insertText('[Usuario]')">
-                    <span class="picker-icon-modern">👤</span> [Usuario]
-                    <span class="picker-desc">Menciona al nuevo miembro</span>
-                  </button>
-                  <button type="button" class="picker-item-modern picker-text-modern" onclick="insertText('[Servidor]')">
-                    <span class="picker-icon-modern">🏰</span> [Servidor]
-                    <span class="picker-desc">Nombre del servidor</span>
-                  </button>
-                  <button type="button" class="picker-item-modern picker-text-modern" onclick="insertText('[Miembros]')">
-                    <span class="picker-icon-modern">👥</span> [Miembros]
-                    <span class="picker-desc">Total de miembros</span>
-                  </button>
-                </div>
+                <div class="picker-content" id="roleList"></div>
               </div>
             </div>
 
-            <!-- IMAGEN -->
-            <div class="form-group-modern">
-              <label class="form-label-modern">
-                <span class="label-text">IMAGEN DEL EMBEBIDO</span>
+            <div class="form-section">
+              <label class="form-label">
+                <span class="label-icon">🖼️</span>
+                GIF o Imagen
               </label>
-              <div class="image-upload-area" onclick="document.getElementById('gif').focus()">
-                ${current.gif ? `<img src="${current.gif}" class="preview-image" onerror="this.src='/icono.png'">` : '<div class="upload-placeholder"><span class="upload-icon">🖼️</span><span>Imagen del embebido</span></div>'}
-              </div>
-              <input type="url" id="gif" class="form-input-modern" placeholder="Pegar URL de una imagen" value="${current.gif || ''}" style="margin-top: 1rem;">
+              <input id="gif" type="text" class="form-input" value="${current.gif || ""}" placeholder="https://ejemplo.com/imagen.gif">
+              <span class="form-hint">URL de una imagen o GIF para acompañar el mensaje</span>
             </div>
 
-            <!-- BOTONES -->
-            <div class="form-actions-modern">
-              <button type="button" class="btn-test-modern" onclick="testMessage()">Probar mensaje</button>
-              <button type="button" class="btn-save-modern" onclick="guardar()">
-                <span class="btn-icon-modern">💾</span>
-                Guardar cambios (100%)
-              </button>
-            </div>
+            <button class="save-btn-enhanced" onclick="guardar()">
+              <span class="btn-icon">💾</span>
+              Guardar Configuración
+            </button>
           </div>
         </div>
 
@@ -399,6 +354,7 @@ app.get("/dashboard/:guildId", async (req, res) => {
           const channels = ${channelsData};
           const roles = ${rolesData};
 
+          // Cargar emojis
           document.addEventListener('DOMContentLoaded', () => {
             const emojiList = document.getElementById('emojiList');
             const channelList = document.getElementById('channelList');
@@ -406,15 +362,15 @@ app.get("/dashboard/:guildId", async (req, res) => {
 
             // Emojis
             if (emojis.length === 0) {
-              emojiList.innerHTML = '<div class="picker-empty-modern">No hay emojis personalizados</div>';
+              emojiList.innerHTML = '<div class="picker-empty">No hay emojis personalizados</div>';
             } else {
               emojis.forEach(emoji => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = 'picker-item-modern';
+                btn.className = 'picker-item';
                 btn.innerHTML = emoji.animated 
-                  ? \`<img src="https://cdn.discordapp.com/emojis/\${emoji.id}.gif" alt="\${emoji.name}" class="emoji-img-modern">\`
-                  : \`<img src="https://cdn.discordapp.com/emojis/\${emoji.id}.png" alt="\${emoji.name}" class="emoji-img-modern">\`;
+                  ? \`<img src="https://cdn.discordapp.com/emojis/\${emoji.id}.gif" alt="\${emoji.name}" class="emoji-img">\`
+                  : \`<img src="https://cdn.discordapp.com/emojis/\${emoji.id}.png" alt="\${emoji.name}" class="emoji-img">\`;
                 btn.title = emoji.name;
                 btn.onclick = () => insertText(\`<:\${emoji.name}:\${emoji.id}>\`);
                 emojiList.appendChild(btn);
@@ -425,8 +381,8 @@ app.get("/dashboard/:guildId", async (req, res) => {
             channels.forEach(channel => {
               const btn = document.createElement('button');
               btn.type = 'button';
-              btn.className = 'picker-item-modern picker-text-modern';
-              btn.innerHTML = \`<span class="picker-icon-modern">#</span> \${channel.name}\`;
+              btn.className = 'picker-item picker-text';
+              btn.innerHTML = \`<span class="picker-icon">#</span> \${channel.name}\`;
               btn.onclick = () => insertText(\`<#\${channel.id}>\`);
               channelList.appendChild(btn);
             });
@@ -435,16 +391,16 @@ app.get("/dashboard/:guildId", async (req, res) => {
             roles.forEach(role => {
               const btn = document.createElement('button');
               btn.type = 'button';
-              btn.className = 'picker-item-modern picker-text-modern';
+              btn.className = 'picker-item picker-text';
               const color = role.color ? '#' + role.color.toString(16).padStart(6, '0') : '#99aab5';
-              btn.innerHTML = \`<span class="picker-icon-modern" style="color: \${color}">@</span> \${role.name}\`;
+              btn.innerHTML = \`<span class="picker-icon" style="color: \${color}">@</span> \${role.name}\`;
               btn.onclick = () => insertText(\`<@&\${role.id}>\`);
               roleList.appendChild(btn);
             });
           });
 
           function togglePicker(type) {
-            const pickers = ['emoji', 'channel', 'role', 'variable'];
+            const pickers = ['emoji', 'channel', 'role'];
             pickers.forEach(p => {
               const picker = document.getElementById(p + 'Picker');
               if (p === type) {
@@ -471,17 +427,12 @@ app.get("/dashboard/:guildId", async (req, res) => {
             closePicker('emoji');
             closePicker('channel');
             closePicker('role');
-            closePicker('variable');
-          }
-
-          function testMessage() {
-            alert('🧪 Función de prueba en desarrollo');
           }
 
           async function guardar() {
-            const btn = document.querySelector('.btn-save-modern');
+            const btn = document.querySelector('.save-btn-enhanced');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<span class="btn-icon-modern">⏳</span> Guardando...';
+            btn.innerHTML = '<span class="btn-icon">⏳</span> Guardando...';
             btn.disabled = true;
             
             const body = {
@@ -500,7 +451,7 @@ app.get("/dashboard/:guildId", async (req, res) => {
               });
               const result = await res.json();
               
-              btn.innerHTML = '<span class="btn-icon-modern">✅</span> ¡Guardado correctamente!';
+              btn.innerHTML = '<span class="btn-icon">✅</span> ¡Guardado!';
               setTimeout(() => {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
@@ -508,7 +459,7 @@ app.get("/dashboard/:guildId", async (req, res) => {
               
               alert(result.message || "✅ Configuración guardada.");
             } catch (error) {
-              btn.innerHTML = '<span class="btn-icon-modern">❌</span> Error al guardar';
+              btn.innerHTML = '<span class="btn-icon">❌</span> Error';
               setTimeout(() => {
                 btn.innerHTML = originalText;
                 btn.disabled = false;

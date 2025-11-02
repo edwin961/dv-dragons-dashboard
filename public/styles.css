@@ -32,6 +32,7 @@ body {
     overflow-x: hidden;
 }
 
+/* Fondo con imagen */
 body::before {
     content: "";
     position: fixed;
@@ -47,42 +48,18 @@ body::before {
     z-index: -1;
 }
 
-/* Partículas decorativas */
-body::after {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        radial-gradient(circle at 20% 50%, rgba(88, 101, 242, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(114, 137, 218, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 40% 20%, rgba(88, 101, 242, 0.05) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: -1;
-    animation: particleMove 20s ease-in-out infinite;
-}
-
-@keyframes particleMove {
-    0%, 100% { transform: translate(0, 0); }
-    33% { transform: translate(30px, -30px); }
-    66% { transform: translate(-20px, 20px); }
-}
-
 /* Navbar */
 .navbar {
-    background: linear-gradient(135deg, rgba(36, 39, 58, 0.98), rgba(45, 49, 66, 0.95));
-    backdrop-filter: blur(20px);
+    background-color: rgba(36, 39, 58, 0.95);
+    backdrop-filter: blur(10px);
     padding: 1rem 3rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(88, 101, 242, 0.2);
+    border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .navbar .logo {
@@ -90,50 +67,41 @@ body::after {
     align-items: center;
     gap: 0.75rem;
     text-decoration: none;
-    transition: all 0.3s ease;
-    position: relative;
-}
-
-.navbar .logo::before {
-    content: "";
-    position: absolute;
-    inset: -5px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--discord-blue), var(--accent));
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: -1;
-    filter: blur(10px);
-}
-
-.navbar .logo:hover::before {
-    opacity: 0.3;
+    transition: transform 0.2s ease;
 }
 
 .navbar .logo:hover {
-    transform: translateY(-2px) scale(1.02);
+    transform: translateY(-2px);
 }
 
 .navbar .logo img {
     height: 40px;
     width: 40px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);
-    transition: all 0.3s ease;
-}
-
-.navbar .logo:hover img {
-    box-shadow: 0 6px 20px rgba(88, 101, 242, 0.5);
-    transform: rotate(-5deg);
+    border-radius: 8px;
 }
 
 .navbar .logo span {
     font-size: 1.25rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--text-light), var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--text-light);
+}
+
+.navbar .nav-links {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.navbar .nav-links a {
+    color: var(--text-medium);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
+}
+
+.navbar .nav-links a:hover {
+    color: var(--text-light);
 }
 
 /* User Info Enhanced */
@@ -141,66 +109,30 @@ body::after {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    background: linear-gradient(135deg, rgba(88, 101, 242, 0.15), rgba(114, 137, 218, 0.1));
+    background: linear-gradient(135deg, rgba(88, 101, 242, 0.1), rgba(114, 137, 218, 0.1));
     padding: 0.5rem 1rem;
     border-radius: 12px;
-    border: 1px solid rgba(88, 101, 242, 0.4);
+    border: 1px solid rgba(88, 101, 242, 0.3);
     transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.user-info-enhanced::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(88, 101, 242, 0.2), transparent);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.user-info-enhanced:hover::before {
-    opacity: 1;
 }
 
 .user-info-enhanced:hover {
-    background: linear-gradient(135deg, rgba(88, 101, 242, 0.2), rgba(114, 137, 218, 0.15));
-    border-color: rgba(88, 101, 242, 0.6);
+    background: linear-gradient(135deg, rgba(88, 101, 242, 0.15), rgba(114, 137, 218, 0.15));
+    border-color: rgba(88, 101, 242, 0.5);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(88, 101, 242, 0.3);
+    box-shadow: 0 4px 12px rgba(88, 101, 242, 0.2);
 }
 
 .user-avatar-wrapper {
     position: relative;
 }
 
-.user-avatar-wrapper::before {
-    content: "";
-    position: absolute;
-    inset: -3px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--discord-blue), var(--accent));
-    animation: rotate 3s linear infinite;
-    z-index: -1;
-}
-
-@keyframes rotate {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
 .user-avatar-wrapper img {
     width: 42px;
     height: 42px;
     border-radius: 50%;
-    border: 3px solid var(--bg-medium);
-    box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
-    transition: all 0.3s ease;
-}
-
-.user-info-enhanced:hover .user-avatar-wrapper img {
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6);
+    border: 2px solid var(--discord-blue);
+    box-shadow: 0 2px 8px rgba(88, 101, 242, 0.3);
 }
 
 .user-status-dot {
@@ -321,436 +253,264 @@ body::after {
     margin-bottom: 0.5rem;
 }
 
-/* ======== DISEÑO MODERNO WELCOME CONFIG ======== */
-.welcome-config {
-    max-width: 900px;
+.subtitle {
+    text-align: left;
+    color: var(--text-medium);
+    font-size: 1.1rem;
+    margin-bottom: 3rem;
 }
 
-.config-header-modern {
+/* Welcome Header */
+.welcome-header {
     text-align: center;
-    padding: 3rem 2rem;
-    background: linear-gradient(135deg, rgba(88, 101, 242, 0.08), rgba(114, 137, 218, 0.05));
-    border-radius: 20px;
-    margin-bottom: 2rem;
-    border: 2px solid rgba(88, 101, 242, 0.2);
-    position: relative;
-    overflow: hidden;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(88, 101, 242, 0.1), rgba(114, 137, 218, 0.05));
+    border-radius: 16px;
+    border: 1px solid rgba(88, 101, 242, 0.2);
 }
 
-.config-header-modern::before {
-    content: "";
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(45deg, transparent, rgba(88, 101, 242, 0.1), transparent);
-    animation: shine 3s infinite;
-}
-
-@keyframes shine {
-    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-}
-
-.config-icon-dragon {
-    font-size: 5rem;
+.welcome-icon {
+    font-size: 4rem;
     margin-bottom: 1rem;
     animation: float 3s ease-in-out infinite;
-    filter: drop-shadow(0 10px 20px rgba(88, 101, 242, 0.3));
-    position: relative;
-    z-index: 1;
 }
 
 @keyframes float {
-    0%, 100% { 
-        transform: translateY(0px) rotate(0deg); 
+    0%, 100% {
+        transform: translateY(0px);
     }
-    33% { 
-        transform: translateY(-15px) rotate(-5deg); 
-    }
-    66% { 
-        transform: translateY(-8px) rotate(5deg); 
+    50% {
+        transform: translateY(-10px);
     }
 }
 
-.config-header-modern h1 {
+.welcome-header h1 {
     font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 0.75rem;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
     text-align: center;
-    background: linear-gradient(135deg, #5865f2, #7289da, #5865f2);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: gradientShift 3s ease infinite;
-    position: relative;
-    z-index: 1;
 }
 
-@keyframes gradientShift {
-    0%, 100% { background-position: 0% center; }
-    50% { background-position: 100% center; }
-}
-
-.config-subtitle {
+.welcome-subtitle {
     color: var(--text-medium);
-    font-size: 1rem;
+    font-size: 1.1rem;
+    font-weight: 500;
 }
 
-.welcome-form-modern {
-    background: linear-gradient(135deg, rgba(45, 49, 66, 0.95), rgba(36, 39, 58, 0.95));
-    border: 2px solid rgba(88, 101, 242, 0.2);
-    border-radius: 20px;
+/* Form Card Enhanced */
+.form-card-enhanced {
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(45, 49, 66, 0.8) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
     padding: 2.5rem;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-    position: relative;
-    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
 }
 
-.welcome-form-modern::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(88, 101, 242, 0.05), transparent);
-    animation: slideRight 3s infinite;
-}
-
-@keyframes slideRight {
-    0% { left: -100%; }
-    100% { left: 100%; }
-}
-
-.form-group-modern {
+.form-section {
     margin-bottom: 2rem;
+    position: relative;
 }
 
-.form-label-modern {
+.form-label {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     gap: 0.5rem;
-    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-bottom: 0.75rem;
 }
 
-.label-text {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--text-medium);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+.label-icon {
+    font-size: 1.2rem;
 }
 
-.label-hint {
-    font-size: 0.875rem;
-    color: var(--text-muted);
-    line-height: 1.5;
-    font-weight: 400;
-}
-
-.form-select-modern,
-.form-input-modern {
+.form-select,
+.form-input,
+.form-textarea {
     width: 100%;
     padding: 0.875rem 1rem;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.3));
-    border: 2px solid var(--border-color);
+    background-color: rgba(26, 27, 38, 0.6);
+    border: 1px solid var(--border-color);
     border-radius: 10px;
     color: var(--text-light);
     font-size: 0.95rem;
     font-family: 'Inter', sans-serif;
     transition: all 0.3s ease;
-    position: relative;
 }
 
-.form-select-modern:focus,
-.form-input-modern:focus {
+.form-select:focus,
+.form-input:focus,
+.form-textarea:focus {
     outline: none;
     border-color: var(--discord-blue);
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.4));
-    box-shadow: 0 0 0 4px rgba(88, 101, 242, 0.1), 0 4px 12px rgba(88, 101, 242, 0.2);
-    transform: translateY(-2px);
+    background-color: rgba(26, 27, 38, 0.8);
+    box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.1);
 }
 
-.form-textarea-modern {
-    width: 100%;
-    padding: 0.875rem 1rem;
-    padding-bottom: 3rem;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.3));
-    border: 2px solid var(--border-color);
-    border-radius: 10px;
-    color: var(--text-light);
-    font-size: 0.95rem;
-    font-family: 'Inter', sans-serif;
+.form-textarea {
     resize: vertical;
-    min-height: 140px;
-    transition: all 0.3s ease;
+    min-height: 120px;
 }
 
-.form-textarea-modern:focus {
-    outline: none;
-    border-color: var(--discord-blue);
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.4));
-    box-shadow: 0 0 0 4px rgba(88, 101, 242, 0.1), 0 4px 12px rgba(88, 101, 242, 0.2);
-}
-
-/* Toggle Switch */
-.toggle-switch {
-    display: inline-block;
-}
-
-.toggle-switch input[type="checkbox"] {
-    display: none;
-}
-
-.toggle-label {
-    position: relative;
-    display: inline-block;
-    width: 44px;
-    height: 24px;
-    background-color: var(--border-color);
-    border-radius: 34px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.toggle-label::after {
-    content: '';
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    left: 3px;
-    top: 3px;
-    background-color: white;
-    border-radius: 50%;
-    transition: transform 0.3s;
-}
-
-.toggle-switch input[type="checkbox"]:checked + .toggle-label {
-    background-color: var(--success);
-}
-
-.toggle-switch input[type="checkbox"]:checked + .toggle-label::after {
-    transform: translateX(20px);
-}
-
-/* Textarea Wrapper */
-.textarea-wrapper-modern {
+.textarea-container {
     position: relative;
 }
 
-.textarea-toolbar-modern {
+.textarea-toolbar {
     position: absolute;
-    bottom: 8px;
-    left: 8px;
+    bottom: 10px;
+    right: 10px;
     display: flex;
     gap: 0.5rem;
     z-index: 10;
 }
 
-.toolbar-btn-modern {
-    width: 32px;
-    height: 32px;
-    background: linear-gradient(135deg, rgba(88, 101, 242, 0.2), rgba(114, 137, 218, 0.15));
-    border: 1px solid rgba(88, 101, 242, 0.4);
+.toolbar-btn {
+    width: 36px;
+    height: 36px;
+    background: rgba(88, 101, 242, 0.2);
+    border: 1px solid var(--discord-blue);
     border-radius: 8px;
-    color: var(--text-medium);
+    color: var(--text-light);
+    font-size: 1.2rem;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0;
-    position: relative;
-    overflow: hidden;
+    backdrop-filter: blur(10px);
 }
 
-.toolbar-btn-modern::before {
-    content: "";
+.toolbar-btn:hover {
+    background: var(--discord-blue);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
+}
+
+.toolbar-btn:active {
+    transform: scale(0.95);
+}
+
+.picker-container {
     position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, var(--discord-blue), var(--accent));
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.toolbar-btn-modern svg {
-    width: 18px;
-    height: 18px;
-    position: relative;
-    z-index: 1;
-}
-
-.toolbar-btn-modern:hover {
-    background: linear-gradient(135deg, var(--discord-blue), var(--accent));
-    border-color: var(--discord-blue);
-    color: white;
-    transform: scale(1.15) translateY(-2px);
-    box-shadow: 0 6px 16px rgba(88, 101, 242, 0.4);
-}
-
-.toolbar-btn-modern:hover::before {
-    opacity: 1;
-}
-
-.toolbar-btn-modern:active {
-    transform: scale(1.05) translateY(0);
-}
-
-/* Picker Modern */
-.picker-modern {
-    position: absolute;
-    bottom: calc(100% + 0.5rem);
-    left: 0;
-    background: linear-gradient(135deg, rgba(45, 49, 66, 0.98), rgba(36, 39, 58, 0.98));
-    backdrop-filter: blur(20px);
-    border: 2px solid var(--discord-blue);
-    border-radius: 16px;
-    width: 100%;
-    max-width: 400px;
-    max-height: 320px;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(88, 101, 242, 0.3);
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 0.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--discord-blue);
+    border-radius: 12px;
+    width: 320px;
+    max-height: 300px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     z-index: 100;
-    animation: pickerSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: slideUp 0.2s ease;
 }
 
-@keyframes pickerSlideUp {
+@keyframes slideUp {
     from {
         opacity: 0;
-        transform: translateY(20px) scale(0.95);
+        transform: translateY(10px);
     }
     to {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translateY(0);
     }
 }
 
-.picker-header-modern {
+.picker-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 1.25rem;
+    padding: 1rem;
     border-bottom: 1px solid var(--border-color);
     font-weight: 600;
-    font-size: 0.9rem;
     color: var(--text-light);
 }
 
-.picker-close-modern {
+.picker-close {
     background: transparent;
     border: none;
     color: var(--text-medium);
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     cursor: pointer;
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 4px;
     transition: all 0.2s ease;
-    line-height: 1;
 }
 
-.picker-close-modern:hover {
+.picker-close:hover {
     background: rgba(255, 255, 255, 0.1);
     color: var(--text-light);
 }
 
-.picker-content-modern {
+.picker-content {
     padding: 1rem;
-    max-height: 250px;
+    max-height: 240px;
     overflow-y: auto;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
     gap: 0.5rem;
 }
 
-.picker-content-modern.picker-list {
-    grid-template-columns: 1fr;
-}
-
-.picker-content-modern::-webkit-scrollbar {
+.picker-content::-webkit-scrollbar {
     width: 8px;
 }
 
-.picker-content-modern::-webkit-scrollbar-track {
+.picker-content::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 4px;
 }
 
-.picker-content-modern::-webkit-scrollbar-thumb {
+.picker-content::-webkit-scrollbar-thumb {
     background: var(--discord-blue);
     border-radius: 4px;
 }
 
-.picker-item-modern {
-    background: linear-gradient(135deg, rgba(88, 101, 242, 0.15), rgba(114, 137, 218, 0.1));
-    border: 1px solid rgba(88, 101, 242, 0.3);
-    border-radius: 10px;
-    padding: 0.6rem;
+.picker-item {
+    background: rgba(88, 101, 242, 0.1);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.5rem;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
-    overflow: hidden;
 }
 
-.picker-item-modern::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, var(--discord-blue), var(--accent));
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-
-.picker-item-modern:hover::before {
-    opacity: 0.3;
-}
-
-.picker-item-modern:hover {
-    background: linear-gradient(135deg, var(--discord-blue), var(--accent));
+.picker-item:hover {
+    background: var(--discord-blue);
+    transform: scale(1.1);
     border-color: var(--discord-blue);
-    transform: scale(1.1) translateY(-2px);
-    box-shadow: 0 6px 16px rgba(88, 101, 242, 0.4);
-    z-index: 1;
 }
 
-.picker-item-modern:active {
-    transform: scale(1.05);
-}
-
-.picker-text-modern {
+.picker-item.picker-text {
+    grid-column: 1 / -1;
     justify-content: flex-start;
-    gap: 0.75rem;
+    gap: 0.5rem;
     color: var(--text-light);
     font-size: 0.9rem;
-    padding: 0.75rem 1rem;
 }
 
-.picker-text-modern .picker-desc {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    margin-left: auto;
-}
-
-.picker-icon-modern {
+.picker-icon {
     font-weight: bold;
     font-size: 1.1rem;
 }
 
-.emoji-img-modern {
-    width: 28px;
-    height: 28px;
+.emoji-img {
+    width: 24px;
+    height: 24px;
     object-fit: contain;
 }
 
-.picker-empty-modern {
+.picker-empty {
     grid-column: 1 / -1;
     text-align: center;
     color: var(--text-muted);
@@ -758,156 +518,48 @@ body::after {
     font-size: 0.9rem;
 }
 
-/* Image Upload Area */
-.image-upload-area {
+.form-hint {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.save-btn-enhanced {
     width: 100%;
-    height: 200px;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.3));
-    border: 3px dashed var(--border-color);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    overflow: hidden;
-    position: relative;
-}
-
-.image-upload-area::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(88, 101, 242, 0.1), rgba(114, 137, 218, 0.05));
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.image-upload-area:hover::before {
-    opacity: 1;
-}
-
-.image-upload-area:hover {
-    border-color: var(--discord-blue);
-    background: linear-gradient(135deg, rgba(88, 101, 242, 0.15), rgba(114, 137, 218, 0.1));
-    transform: scale(1.02);
-    box-shadow: 0 8px 24px rgba(88, 101, 242, 0.2);
-}
-
-.upload-placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.75rem;
-    color: var(--text-medium);
-    z-index: 1;
-}
-
-.upload-icon {
-    font-size: 3.5rem;
-    animation: uploadPulse 2s ease-in-out infinite;
-}
-
-@keyframes uploadPulse {
-    0%, 100% { transform: scale(1); opacity: 0.8; }
-    50% { transform: scale(1.1); opacity: 1; }
-}
-
-.preview-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: all 0.3s ease;
-}
-
-.image-upload-area:hover .preview-image {
-    transform: scale(1.05);
-    filter: brightness(1.1);
-}
-
-/* Form Actions */
-.form-actions-modern {
-    display: flex;
-    gap: 1rem;
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border-color);
-}
-
-.btn-test-modern {
-    flex: 1;
-    padding: 0.875rem 1.5rem;
-    background: transparent;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    color: var(--text-light);
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-test-modern:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: var(--text-medium);
-}
-
-.btn-save-modern {
-    flex: 2;
-    padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, var(--success), #3ca46e);
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--discord-blue), var(--accent));
+    color: white;
     border: none;
     border-radius: 10px;
-    color: white;
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    position: relative;
-    overflow: hidden;
+    gap: 0.75rem;
+    box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3);
 }
 
-.btn-save-modern::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transform: translateX(-100%);
-    transition: transform 0.6s ease;
+.save-btn-enhanced:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(88, 101, 242, 0.4);
 }
 
-.btn-save-modern:hover::before {
-    transform: translateX(100%);
+.save-btn-enhanced:active {
+    transform: translateY(0);
 }
 
-.btn-save-modern:hover {
-    background: linear-gradient(135deg, #3ca46e, var(--success));
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 20px rgba(67, 181, 129, 0.4);
-}
-
-.btn-save-modern:active {
-    transform: translateY(-1px) scale(1);
-}
-
-.btn-save-modern:disabled {
+.save-btn-enhanced:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-    transform: none;
 }
 
-.btn-icon-modern {
+.btn-icon {
     font-size: 1.3rem;
-    animation: iconBounce 2s ease-in-out infinite;
-}
-
-@keyframes iconBounce {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
 }
 
 /* Empty State */
@@ -915,6 +567,100 @@ body::after {
     text-align: center;
     padding: 4rem 2rem;
     color: var(--text-medium);
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+}
+
+/* Config Container */
+.config-container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 2rem;
+    flex: 1;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-medium);
+    text-decoration: none;
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+    transition: color 0.3s ease;
+}
+
+.back-link:hover {
+    color: var(--text-light);
+}
+
+.config-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.config-header h1 {
+    font-size: 2.25rem;
+    color: var(--text-light);
+    margin-bottom: 0.75rem;
+}
+
+.server-id-badge {
+    display: inline-block;
+    background-color: var(--bg-card);
+    color: var(--text-medium);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-family: 'Courier New', monospace;
+    border: 1px solid var(--border-color);
+}
+
+.config-section h2 {
+    font-size: 1.5rem;
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+}
+
+.config-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+}
+
+.option-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.option-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px var(--shadow);
+    border-color: var(--accent);
+}
+
+.option-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.option-card h3 {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+}
+
+.option-card p {
+    color: var(--text-medium);
+    font-size: 0.9rem;
+    line-height: 1.5;
 }
 
 /* Footer */
@@ -931,7 +677,8 @@ body::after {
     font-size: 0.9rem;
 }
 
-/* ======== SERVERS GRID ======== */
+/* ======== DISEÑO SERVERS DASHBOARD - GRID 3 COLUMNAS ======== */
+
 .servers-modern-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -940,36 +687,21 @@ body::after {
 }
 
 .server-card-modern {
-    background: linear-gradient(135deg, rgba(45, 49, 66, 0.9), rgba(36, 39, 58, 0.9));
-    border: 2px solid var(--border-color);
-    border-radius: 16px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
     padding: 1.25rem 1.5rem;
     display: flex;
     align-items: center;
     gap: 1rem;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    position: relative;
-    overflow: hidden;
-}
-
-.server-card-modern::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(88, 101, 242, 0.1), transparent);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.server-card-modern:hover::before {
-    opacity: 1;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 .server-card-modern:hover {
-    transform: translateY(-5px) scale(1.02);
+    transform: translateY(-3px);
     border-color: var(--accent);
-    box-shadow: 0 8px 25px rgba(88, 101, 242, 0.3), 0 0 0 1px rgba(88, 101, 242, 0.2);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.35);
 }
 
 .server-modern-icon {
@@ -978,15 +710,6 @@ body::after {
     border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;
-    border: 3px solid transparent;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.server-card-modern:hover .server-modern-icon {
-    border-color: var(--discord-blue);
-    transform: rotate(5deg) scale(1.1);
-    box-shadow: 0 6px 20px rgba(88, 101, 242, 0.4);
 }
 
 .server-modern-info {
@@ -1044,6 +767,12 @@ body::after {
     gap: 1rem;
 }
 
+.refresh-container p {
+    color: var(--text-medium);
+    font-size: 0.95rem;
+    margin: 0;
+}
+
 .refresh-btn {
     background-color: transparent;
     color: var(--text-light);
@@ -1076,6 +805,10 @@ body::after {
         padding: 1rem 1.5rem;
     }
 
+    .navbar .nav-links {
+        display: none;
+    }
+
     .user-info-enhanced {
         padding: 0.4rem 0.75rem;
     }
@@ -1093,32 +826,80 @@ body::after {
         font-size: 2.5rem;
     }
 
+    .hero p {
+        font-size: 1.1rem;
+    }
+
     .dashboard-container {
         padding: 1.5rem;
         margin: 2rem 1rem;
+    }
+
+    .dashboard-container h1 {
+        text-align: center;
+    }
+
+    .subtitle {
+        text-align: center;
     }
 
     .servers-modern-grid {
         grid-template-columns: 1fr;
     }
 
-    .welcome-form-modern {
+    .refresh-container {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+    }
+
+    .config-options {
+        grid-template-columns: 1fr;
+    }
+
+    .welcome-header {
         padding: 1.5rem;
     }
 
-    .config-header-modern {
-        padding: 2rem 1rem;
+    .welcome-icon {
+        font-size: 3rem;
     }
 
-    .config-icon-dragon {
-        font-size: 3.5rem;
+    .form-card-enhanced {
+        padding: 1.5rem;
     }
 
-    .form-actions-modern {
-        flex-direction: column;
+    .picker-container {
+        width: 280px;
     }
 
-    .picker-modern {
-        max-width: 100%;
+    .textarea-toolbar {
+        bottom: 8px;
+        right: 8px;
+    }
+
+    .toolbar-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .dashboard-container h1 {
+        font-size: 2rem;
+    }
+
+    .discord-button {
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    .welcome-header h1 {
+        font-size: 1.8rem;
     }
 }
