@@ -1,5 +1,5 @@
 // =======================================================
-// 🐉 DV Dragons Dashboard - Con sesión, avatar y detección del bot
+// 🐉 DV Dragons Dashboard - Configuración de bienvenida
 // =======================================================
 
 require("dotenv").config();
@@ -51,13 +51,12 @@ app.get("/", (req, res) => {
   `);
 });
 
-// 🔑 Callback mejorado con cookie persistente y datos de usuario
+// 🔑 Callback
 app.get("/callback", async (req, res) => {
   const code = req.query.code;
   if (!code) return res.status(400).send("⚠️ Falta el código de autorización.");
 
   try {
-    // Intercambiar el code por el access_token
     const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -71,33 +70,20 @@ app.get("/callback", async (req, res) => {
     });
 
     const tokenData = await tokenResponse.json();
-    console.log("🔍 Token Response:", tokenData);
-
-    if (tokenData.error) {
-      return res
-        .status(500)
-        .send(`Error al obtener token: ${tokenData.error_description || tokenData.error}`);
-    }
-
     const accessToken = tokenData.access_token;
 
-    // 🔹 Obtener datos del usuario
     const userResponse = await fetch("https://discord.com/api/users/@me", {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     const userData = await userResponse.json();
-    console.log("👤 Usuario autenticado:", userData);
 
-    // Guardar datos en cookies (1 hora)
     res.cookie("access_token", accessToken, {
       httpOnly: true,
       secure: true,
       sameSite: "lax",
       maxAge: 60 * 60 * 1000,
     });
-    res.cookie("user_name", userData.username, {
-      maxAge: 60 * 60 * 1000,
-    });
+    res.cookie("user_name", userData.username, { maxAge: 60 * 60 * 1000 });
     res.cookie(
       "user_avatar",
       userData.avatar
@@ -109,46 +95,35 @@ app.get("/callback", async (req, res) => {
     res.redirect("/servers");
   } catch (err) {
     console.error("❌ Error en /callback:", err);
-    res.status(500).send("Ocurrió un error interno al procesar la autenticación.");
+    res.status(500).send("Error interno de autenticación.");
   }
 });
 
-// 🧭 Ruta /servers - obtiene siempre datos actualizados y detecta si el bot está
+// 🧭 Servidores
 app.get("/servers", async (req, res) => {
   const accessToken = req.cookies.access_token;
   const username = req.cookies.user_name;
   const avatar = req.cookies.user_avatar;
 
-  if (!accessToken) {
-    return res.redirect("/");
-  }
+  if (!accessToken) return res.redirect("/");
 
   try {
-    // 🧩 1️⃣ Obtener servidores del usuario
     const guildsResponse = await fetch("https://discord.com/api/users/@me/guilds", {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     const guildsData = await guildsResponse.json();
 
-    if (!Array.isArray(guildsData)) {
-      console.error("⚠️ Error al obtener guilds:", guildsData);
-      return res.status(500).send("Error al obtener tus servidores de Discord.");
-    }
-
-    // 🧩 2️⃣ Obtener servidores donde está el bot
     const botGuildsResponse = await fetch("https://discord.com/api/v10/users/@me/guilds", {
       headers: { Authorization: `Bot ${BOT_TOKEN}` },
     });
     const botGuilds = await botGuildsResponse.json();
     const botGuildIds = Array.isArray(botGuilds) ? botGuilds.map((g) => g.id) : [];
 
-    // 🧩 3️⃣ Filtrar servidores administrables
     const MANAGE_GUILD_PERMISSION = 32;
     const adminGuilds = guildsData.filter(
       (g) => (parseInt(g.permissions) & MANAGE_GUILD_PERMISSION) === MANAGE_GUILD_PERMISSION
     );
 
-    // 🧩 4️⃣ Generar la lista con verificación del bot
     const guildListHTML =
       adminGuilds.length > 0
         ? `<div class="servers-modern-grid">
@@ -179,7 +154,6 @@ app.get("/servers", async (req, res) => {
           </div>`
         : `<div class="empty-state"><p>No tienes servidores con permiso de administración.</p></div>`;
 
-    // 🧩 5️⃣ Página final
     res.send(`
       <!DOCTYPE html>
       <html lang="es">
@@ -189,20 +163,9 @@ app.get("/servers", async (req, res) => {
         <title>Manage Servers - DV Dragons</title>
         <link rel="stylesheet" href="/styles.css">
         <style>
-          .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #fff;
-            font-weight: 500;
-          }
-          .user-info img {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            border: 2px solid #5865f2;
-          }
-          .invite { background-color: #5865f2; color: #fff; font-size: 1.3rem; font-weight: 700; padding: 0.4rem 1.1rem; }
+          .user-info { display:flex;align-items:center;gap:10px;color:#fff;font-weight:500; }
+          .user-info img { width:35px;height:35px;border-radius:50%;border:2px solid #5865f2; }
+          .invite { background-color:#5865f2;color:#fff; }
         </style>
       </head>
       <body>
@@ -219,7 +182,7 @@ app.get("/servers", async (req, res) => {
 
         <div class="dashboard-container">
           <h1>Manejar servidores</h1>
-          <p class="subtitle">Selecciona un servidor para administrarlo o invitar al bot.</p>
+          <p class="subtitle">Selecciona un servidor para configurarlo.</p>
           ${guildListHTML}
           <div class="refresh-container">
             <p>¿Falta un servidor?</p>
@@ -227,9 +190,7 @@ app.get("/servers", async (req, res) => {
           </div>
         </div>
 
-        <footer class="footer">
-          <p>© 2025 DV Dragons Bot. Todos los derechos reservados.</p>
-        </footer>
+        <footer class="footer"><p>© 2025 DV Dragons Bot. Todos los derechos reservados.</p></footer>
       </body>
       </html>
     `);
@@ -239,20 +200,66 @@ app.get("/servers", async (req, res) => {
   }
 });
 
-// ⚙️ Dashboard individual
+// ⚙️ Dashboard de bienvenida
 app.get("/dashboard/:guildId", (req, res) => {
   const guildId = req.params.guildId;
+
   res.send(`
-    <html>
-      <body>
-        <h1>Panel del servidor: ${guildId}</h1>
-        <p>Aquí podrás configurar DV Dragons Bot.</p>
-      </body>
-    </html>
+  <!DOCTYPE html>
+  <html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración de Bienvenida - DV Dragons</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <div class="navbar">
+      <a href="/servers" class="logo">
+        <img src="/icono.png" alt="Logo">
+        <span>DV Dragons Bot</span>
+      </a>
+    </div>
+
+    <div class="dashboard-container">
+      <h1>🐉 Configuración de Bienvenida</h1>
+      <p class="subtitle">Personaliza cómo DV Dragons da la bienvenida en tu servidor.</p>
+
+      <div class="form-card">
+        <label>Seleccionar Canal:</label>
+        <select id="channel-select">
+          <option>#general</option>
+          <option>#bienvenidas</option>
+          <option>#chat</option>
+        </select>
+
+        <label><input type="checkbox" id="ignore-bots"> Ignorar Bots</label>
+
+        <label>Mensaje Personalizado:</label>
+        <textarea id="welcome-message" rows="4" placeholder="¡Bienvenido {user} al servidor {server}!"></textarea>
+
+        <label>Estilo de Fuente:</label>
+        <select id="font-style">
+          <option>Normal</option>
+          <option>Negrita</option>
+          <option>Cursiva</option>
+          <option>Decorativo</option>
+        </select>
+
+        <label>Color del Mensaje:</label>
+        <input type="color" id="color-picker" value="#5865f2">
+
+        <button class="save-btn">💾 Guardar Configuración</button>
+      </div>
+    </div>
+
+    <footer class="footer"><p>© 2025 DV Dragons Bot. Todos los derechos reservados.</p></footer>
+  </body>
+  </html>
   `);
 });
 
-// 🚀 Servidor online
+// 🚀 Servidor
 app.listen(PORT, () =>
-  console.log(`✅ Servidor en línea en http://localhost:\${PORT}`)
+  console.log(`✅ Servidor en línea en http://localhost:${PORT}`)
 );
