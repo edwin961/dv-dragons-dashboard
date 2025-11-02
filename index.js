@@ -161,8 +161,8 @@ app.get("/servers", async (req, res) => {
                 const isBotInGuild = botGuildIds.includes(g.id);
 
                 const actionButton = isBotInGuild
-                  ? `<a href="/dashboard/${g.id}" class="server-modern-btn">Administrar</a>`
-                  : `<a href="https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&permissions=8&scope=bot%20applications.commands&guild_id=${g.id}" class="server-modern-btn invite">Invitar</a>`;
+                  ? `<a href="/dashboard/${g.id}" class="server-modern-btn">IR</a>`
+                  : `<a href="https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&permissions=8&scope=bot%20applications.commands&guild_id=${g.id}" class="server-modern-btn invite">+</a>`;
 
                 return `
                   <div class="server-card-modern">
@@ -202,7 +202,7 @@ app.get("/servers", async (req, res) => {
             border-radius: 50%;
             border: 2px solid #5865f2;
           }
-          .invite { background-color: #5865f2; color: #fff; }
+          .invite { background-color: #5865f2; color: #fff; font-size: 1.3rem; font-weight: 700; padding: 0.4rem 1.1rem; }
         </style>
       </head>
       <body>
@@ -254,5 +254,5 @@ app.get("/dashboard/:guildId", (req, res) => {
 
 // 🚀 Servidor online
 app.listen(PORT, () =>
-  console.log(`✅ Servidor en línea en http://localhost:${PORT}`)
+  console.log(`✅ Servidor en línea en http://localhost:\${PORT}`)
 );
