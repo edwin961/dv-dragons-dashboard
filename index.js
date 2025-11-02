@@ -1,5 +1,5 @@
 // =======================================================
-// 🐉 DV Dragons Dashboard - Con sesión, avatar y actualización en vivo
+// 🐉 DV Dragons Dashboard - Con sesión, avatar y detección del bot
 // =======================================================
 
 require("dotenv").config();
@@ -10,7 +10,7 @@ const cookieParser = require("cookie-parser");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } = process.env;
+const { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, BOT_TOKEN } = process.env;
 
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
@@ -98,9 +98,13 @@ app.get("/callback", async (req, res) => {
     res.cookie("user_name", userData.username, {
       maxAge: 60 * 60 * 1000,
     });
-    res.cookie("user_avatar", userData.avatar ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png` : "/icono.png", {
-      maxAge: 60 * 60 * 1000,
-    });
+    res.cookie(
+      "user_avatar",
+      userData.avatar
+        ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png`
+        : "/icono.png",
+      { maxAge: 60 * 60 * 1000 }
+    );
 
     res.redirect("/servers");
   } catch (err) {
@@ -109,7 +113,7 @@ app.get("/callback", async (req, res) => {
   }
 });
 
-// 🧭 Ruta /servers - obtiene siempre datos actualizados
+// 🧭 Ruta /servers - obtiene siempre datos actualizados y detecta si el bot está
 app.get("/servers", async (req, res) => {
   const accessToken = req.cookies.access_token;
   const username = req.cookies.user_name;
@@ -120,7 +124,7 @@ app.get("/servers", async (req, res) => {
   }
 
   try {
-    // Consultar servidores directamente desde Discord
+    // 🧩 1️⃣ Obtener servidores del usuario
     const guildsResponse = await fetch("https://discord.com/api/users/@me/guilds", {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
@@ -131,11 +135,20 @@ app.get("/servers", async (req, res) => {
       return res.status(500).send("Error al obtener tus servidores de Discord.");
     }
 
+    // 🧩 2️⃣ Obtener servidores donde está el bot
+    const botGuildsResponse = await fetch("https://discord.com/api/v10/users/@me/guilds", {
+      headers: { Authorization: `Bot ${BOT_TOKEN}` },
+    });
+    const botGuilds = await botGuildsResponse.json();
+    const botGuildIds = Array.isArray(botGuilds) ? botGuilds.map((g) => g.id) : [];
+
+    // 🧩 3️⃣ Filtrar servidores administrables
     const MANAGE_GUILD_PERMISSION = 32;
     const adminGuilds = guildsData.filter(
       (g) => (parseInt(g.permissions) & MANAGE_GUILD_PERMISSION) === MANAGE_GUILD_PERMISSION
     );
 
+    // 🧩 4️⃣ Generar la lista con verificación del bot
     const guildListHTML =
       adminGuilds.length > 0
         ? `<div class="servers-modern-grid">
@@ -145,6 +158,12 @@ app.get("/servers", async (req, res) => {
                   ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png`
                   : "/icono.png";
                 const role = g.owner ? "Owner" : "Admin";
+                const isBotInGuild = botGuildIds.includes(g.id);
+
+                const actionButton = isBotInGuild
+                  ? `<a href="/dashboard/${g.id}" class="server-modern-btn">Administrar</a>`
+                  : `<a href="https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&permissions=8&scope=bot%20applications.commands&guild_id=${g.id}" class="server-modern-btn invite">Invitar</a>`;
+
                 return `
                   <div class="server-card-modern">
                     <img class="server-modern-icon" src="${icon}" alt="${g.name}" />
@@ -152,7 +171,7 @@ app.get("/servers", async (req, res) => {
                       <h3>${g.name}</h3>
                       <p>${role}</p>
                     </div>
-                    <a href="/dashboard/${g.id}" class="server-modern-btn">+</a>
+                    ${actionButton}
                   </div>
                 `;
               })
@@ -160,6 +179,7 @@ app.get("/servers", async (req, res) => {
           </div>`
         : `<div class="empty-state"><p>No tienes servidores con permiso de administración.</p></div>`;
 
+    // 🧩 5️⃣ Página final
     res.send(`
       <!DOCTYPE html>
       <html lang="es">
@@ -182,6 +202,7 @@ app.get("/servers", async (req, res) => {
             border-radius: 50%;
             border: 2px solid #5865f2;
           }
+          .invite { background-color: #5865f2; color: #fff; }
         </style>
       </head>
       <body>
@@ -198,7 +219,7 @@ app.get("/servers", async (req, res) => {
 
         <div class="dashboard-container">
           <h1>Manejar servidores</h1>
-          <p class="subtitle">Selecciona un servidor para administrarlo.</p>
+          <p class="subtitle">Selecciona un servidor para administrarlo o invitar al bot.</p>
           ${guildListHTML}
           <div class="refresh-container">
             <p>¿Falta un servidor?</p>
