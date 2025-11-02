@@ -215,6 +215,20 @@ app.get("/dashboard/:guildId", async (req, res) => {
     const channels = await channelsResponse.json();
     const textChannels = channels.filter((c) => c.type === 0);
 
+    // 🔹 Obtener emojis del servidor
+    const emojisResponse = await fetch(
+      `https://discord.com/api/v10/guilds/${guildId}/emojis`,
+      { headers: { Authorization: `Bot ${BOT_TOKEN}` } }
+    );
+    const emojis = await emojisResponse.json();
+
+    // 🔹 Obtener roles del servidor
+    const rolesResponse = await fetch(
+      `https://discord.com/api/v10/guilds/${guildId}/roles`,
+      { headers: { Authorization: `Bot ${BOT_TOKEN}` } }
+    );
+    const roles = await rolesResponse.json();
+
     // 🔹 Consultar datos existentes en Supabase
     const { data: bienvenida } = await supabase
       .from("bienvenidas")
@@ -231,6 +245,11 @@ app.get("/dashboard/:guildId", async (req, res) => {
           }> #${c.name}</option>`
       )
       .join("");
+
+    // 🔹 Preparar data para JS
+    const emojisData = JSON.stringify(emojis.map(e => ({ id: e.id, name: e.name, animated: e.animated })));
+    const channelsData = JSON.stringify(textChannels.map(c => ({ id: c.id, name: c.name })));
+    const rolesData = JSON.stringify(roles.filter(r => r.name !== '@everyone').map(r => ({ id: r.id, name: r.name, color: r.color })));
 
     res.send(`
       <!DOCTYPE html>
@@ -271,7 +290,47 @@ app.get("/dashboard/:guildId", async (req, res) => {
                 <span class="label-icon">💬</span>
                 Mensaje de Bienvenida
               </label>
-              <textarea id="message" rows="5" class="form-textarea" placeholder="Escribe un mensaje cálido para los nuevos miembros...">${current.texto || ""}</textarea>
+              <div class="textarea-container">
+                <textarea id="message" rows="5" class="form-textarea" placeholder="Escribe un mensaje cálido para los nuevos miembros...">${current.texto || ""}</textarea>
+                <div class="textarea-toolbar">
+                  <button type="button" class="toolbar-btn" onclick="togglePicker('emoji')" title="Emojis del servidor">
+                    😀
+                  </button>
+                  <button type="button" class="toolbar-btn" onclick="togglePicker('channel')" title="Mencionar canal">
+                    #
+                  </button>
+                  <button type="button" class="toolbar-btn" onclick="togglePicker('role')" title="Mencionar rol">
+                    @
+                  </button>
+                </div>
+              </div>
+
+              <!-- Picker de Emojis -->
+              <div id="emojiPicker" class="picker-container" style="display: none;">
+                <div class="picker-header">
+                  <span>Emojis del Servidor</span>
+                  <button type="button" onclick="closePicker('emoji')" class="picker-close">✕</button>
+                </div>
+                <div class="picker-content" id="emojiList"></div>
+              </div>
+
+              <!-- Picker de Canales -->
+              <div id="channelPicker" class="picker-container" style="display: none;">
+                <div class="picker-header">
+                  <span>Mencionar Canal</span>
+                  <button type="button" onclick="closePicker('channel')" class="picker-close">✕</button>
+                </div>
+                <div class="picker-content" id="channelList"></div>
+              </div>
+
+              <!-- Picker de Roles -->
+              <div id="rolePicker" class="picker-container" style="display: none;">
+                <div class="picker-header">
+                  <span>Mencionar Rol</span>
+                  <button type="button" onclick="closePicker('role')" class="picker-close">✕</button>
+                </div>
+                <div class="picker-content" id="roleList"></div>
+              </div>
             </div>
 
             <div class="form-section">
@@ -291,6 +350,85 @@ app.get("/dashboard/:guildId", async (req, res) => {
         </div>
 
         <script>
+          const emojis = ${emojisData};
+          const channels = ${channelsData};
+          const roles = ${rolesData};
+
+          // Cargar emojis
+          document.addEventListener('DOMContentLoaded', () => {
+            const emojiList = document.getElementById('emojiList');
+            const channelList = document.getElementById('channelList');
+            const roleList = document.getElementById('roleList');
+
+            // Emojis
+            if (emojis.length === 0) {
+              emojiList.innerHTML = '<div class="picker-empty">No hay emojis personalizados</div>';
+            } else {
+              emojis.forEach(emoji => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'picker-item';
+                btn.innerHTML = emoji.animated 
+                  ? \`<img src="https://cdn.discordapp.com/emojis/\${emoji.id}.gif" alt="\${emoji.name}" class="emoji-img">\`
+                  : \`<img src="https://cdn.discordapp.com/emojis/\${emoji.id}.png" alt="\${emoji.name}" class="emoji-img">\`;
+                btn.title = emoji.name;
+                btn.onclick = () => insertText(\`<:\${emoji.name}:\${emoji.id}>\`);
+                emojiList.appendChild(btn);
+              });
+            }
+
+            // Canales
+            channels.forEach(channel => {
+              const btn = document.createElement('button');
+              btn.type = 'button';
+              btn.className = 'picker-item picker-text';
+              btn.innerHTML = \`<span class="picker-icon">#</span> \${channel.name}\`;
+              btn.onclick = () => insertText(\`<#\${channel.id}>\`);
+              channelList.appendChild(btn);
+            });
+
+            // Roles
+            roles.forEach(role => {
+              const btn = document.createElement('button');
+              btn.type = 'button';
+              btn.className = 'picker-item picker-text';
+              const color = role.color ? '#' + role.color.toString(16).padStart(6, '0') : '#99aab5';
+              btn.innerHTML = \`<span class="picker-icon" style="color: \${color}">@</span> \${role.name}\`;
+              btn.onclick = () => insertText(\`<@&\${role.id}>\`);
+              roleList.appendChild(btn);
+            });
+          });
+
+          function togglePicker(type) {
+            const pickers = ['emoji', 'channel', 'role'];
+            pickers.forEach(p => {
+              const picker = document.getElementById(p + 'Picker');
+              if (p === type) {
+                picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
+              } else {
+                picker.style.display = 'none';
+              }
+            });
+          }
+
+          function closePicker(type) {
+            document.getElementById(type + 'Picker').style.display = 'none';
+          }
+
+          function insertText(text) {
+            const textarea = document.getElementById('message');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const before = textarea.value.substring(0, start);
+            const after = textarea.value.substring(end);
+            textarea.value = before + text + after;
+            textarea.selectionStart = textarea.selectionEnd = start + text.length;
+            textarea.focus();
+            closePicker('emoji');
+            closePicker('channel');
+            closePicker('role');
+          }
+
           async function guardar() {
             const btn = document.querySelector('.save-btn-enhanced');
             const originalText = btn.innerHTML;
