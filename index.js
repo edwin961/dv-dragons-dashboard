@@ -169,7 +169,16 @@ app.get("/servers", async (req, res) => {
       <body>
         <div class="navbar">
           <a href="/" class="logo"><img src="/icono.png"><span>DV Dragons Bot</span></a>
-          <div class="user-info"><img src="${avatar}" /><span>${username}</span></div>
+          <div class="user-info-enhanced">
+            <div class="user-avatar-wrapper">
+              <img src="${avatar}" alt="${username}" />
+              <div class="user-status-dot"></div>
+            </div>
+            <div class="user-details">
+              <span class="user-name">${username}</span>
+              <span class="user-role">Administrador</span>
+            </div>
+          </div>
         </div>
         <div class="dashboard-container">
           <h1>Manejar servidores</h1>
@@ -234,26 +243,60 @@ app.get("/dashboard/:guildId", async (req, res) => {
       <body>
         <div class="navbar"><a href="/servers" class="logo"><img src="/icono.png"><span>DV Dragons Bot</span></a></div>
         <div class="dashboard-container">
-          <h1>🐉 Configuración de Bienvenida — ${guildData.name}</h1>
-          <div class="form-card">
-            <label>Canal:</label>
-            <select id="channel">${channelOptions}</select>
+          <div class="welcome-header">
+            <div class="welcome-icon">🐉</div>
+            <h1>Configuración de Bienvenida</h1>
+            <p class="welcome-subtitle">${guildData.name}</p>
+          </div>
+          
+          <div class="form-card-enhanced">
+            <div class="form-section">
+              <label class="form-label">
+                <span class="label-icon">📢</span>
+                Canal de Bienvenida
+              </label>
+              <select id="channel" class="form-select">${channelOptions}</select>
+            </div>
 
-            <label>Encabezado:</label>
-            <input id="header" type="text" value="${current.encabezado || ""}" placeholder="Ej: ¡Bienvenido a ${guildData.name}!">
+            <div class="form-section">
+              <label class="form-label">
+                <span class="label-icon">✨</span>
+                Encabezado
+              </label>
+              <input id="header" type="text" class="form-input" value="${current.encabezado || ""}" placeholder="Ej: ¡Bienvenido a ${guildData.name}!">
+            </div>
 
-            <label>Mensaje:</label>
-            <textarea id="message" rows="4" placeholder="Tu mensaje...">${current.texto || ""}</textarea>
+            <div class="form-section">
+              <label class="form-label">
+                <span class="label-icon">💬</span>
+                Mensaje de Bienvenida
+              </label>
+              <textarea id="message" rows="5" class="form-textarea" placeholder="Escribe un mensaje cálido para los nuevos miembros...">${current.texto || ""}</textarea>
+            </div>
 
-            <label>GIF o Imagen:</label>
-            <input id="gif" type="text" value="${current.gif || ""}" placeholder="URL de una imagen o GIF">
+            <div class="form-section">
+              <label class="form-label">
+                <span class="label-icon">🖼️</span>
+                GIF o Imagen
+              </label>
+              <input id="gif" type="text" class="form-input" value="${current.gif || ""}" placeholder="https://ejemplo.com/imagen.gif">
+              <span class="form-hint">URL de una imagen o GIF para acompañar el mensaje</span>
+            </div>
 
-            <button class="save-btn" onclick="guardar()">💾 Guardar</button>
+            <button class="save-btn-enhanced" onclick="guardar()">
+              <span class="btn-icon">💾</span>
+              Guardar Configuración
+            </button>
           </div>
         </div>
 
         <script>
           async function guardar() {
+            const btn = document.querySelector('.save-btn-enhanced');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="btn-icon">⏳</span> Guardando...';
+            btn.disabled = true;
+            
             const body = {
               guild_id: "${guildId}",
               canal_id: document.getElementById('channel').value,
@@ -261,13 +304,30 @@ app.get("/dashboard/:guildId", async (req, res) => {
               texto: document.getElementById('message').value,
               gif: document.getElementById('gif').value
             };
-            const res = await fetch('/api/save-welcome', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(body)
-            });
-            const result = await res.json();
-            alert(result.message || "✅ Configuración guardada.");
+            
+            try {
+              const res = await fetch('/api/save-welcome', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+              });
+              const result = await res.json();
+              
+              btn.innerHTML = '<span class="btn-icon">✅</span> ¡Guardado!';
+              setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+              }, 2000);
+              
+              alert(result.message || "✅ Configuración guardada.");
+            } catch (error) {
+              btn.innerHTML = '<span class="btn-icon">❌</span> Error';
+              setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+              }, 2000);
+              alert("Error al guardar la configuración");
+            }
           }
         </script>
       </body>
