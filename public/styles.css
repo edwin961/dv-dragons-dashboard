@@ -344,6 +344,7 @@ body::before {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 150px;
 }
 
 .sidebar-server-info p {
@@ -354,41 +355,98 @@ body::before {
 .sidebar-nav {
     display: flex;
     flex-direction: column;
+    gap: 0.75rem;
+}
+
+.sidebar-category {
+    margin-top: 1.5rem;
+}
+
+.sidebar-category:first-child {
+    margin-top: 0;
+}
+
+.sidebar-category-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+    padding: 0 0.5rem;
+    display: flex;
+    align-items: center;
     gap: 0.5rem;
+}
+
+.category-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border-color), transparent);
 }
 
 .sidebar-nav-item {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.875rem 1rem;
+    padding: 0.75rem 1rem;
     color: var(--text-medium);
     text-decoration: none;
-    border-radius: 10px;
+    border-radius: 8px;
     font-weight: 500;
-    font-size: 0.95rem;
-    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
     border: 1px solid transparent;
+    position: relative;
+}
+
+.sidebar-nav-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 0;
+    background: linear-gradient(180deg, var(--discord-blue), var(--accent));
+    border-radius: 0 3px 3px 0;
+    transition: height 0.2s ease;
 }
 
 .sidebar-nav-item:hover {
-    background: rgba(88, 101, 242, 0.1);
+    background: rgba(88, 101, 242, 0.08);
     color: var(--text-light);
-    border-color: rgba(88, 101, 242, 0.3);
-    transform: translateX(5px);
+    border-color: rgba(88, 101, 242, 0.2);
+    transform: translateX(3px);
+}
+
+.sidebar-nav-item:hover::before {
+    height: 60%;
 }
 
 .sidebar-nav-item.active {
-    background: linear-gradient(135deg, rgba(88, 101, 242, 0.2), rgba(114, 137, 218, 0.1));
+    background: linear-gradient(135deg, rgba(88, 101, 242, 0.15), rgba(114, 137, 218, 0.08));
     color: var(--text-light);
-    border-color: var(--discord-blue);
+    border-color: rgba(88, 101, 242, 0.3);
     font-weight: 600;
 }
 
+.sidebar-nav-item.active::before {
+    height: 80%;
+}
+
 .sidebar-icon {
-    font-size: 1.3rem;
-    width: 24px;
+    font-size: 1.2rem;
+    width: 20px;
     text-align: center;
+    opacity: 0.9;
+}
+
+.sidebar-nav-item:hover .sidebar-icon,
+.sidebar-nav-item.active .sidebar-icon {
+    opacity: 1;
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
 }
 
 .dashboard-main {

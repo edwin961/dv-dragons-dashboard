@@ -20,6 +20,56 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Función helper para generar el sidebar
+function generateSidebar(guildId, guildName, icon, activePage) {
+  return `
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-header">
+        <img src="${icon}" alt="${guildName}" class="sidebar-server-icon">
+        <div class="sidebar-server-info">
+          <h3>${guildName}</h3>
+          <p>Panel de Control</p>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-category">
+          <div class="sidebar-category-title">
+            <span>Principal</span>
+            <div class="category-line"></div>
+          </div>
+          <a href="/dashboard/${guildId}" class="sidebar-nav-item ${activePage === 'server' ? 'active' : ''}">
+            <span class="sidebar-icon">📊</span>
+            <span>Server</span>
+          </a>
+          <a href="/dashboard/${guildId}/premium" class="sidebar-nav-item ${activePage === 'premium' ? 'active' : ''}">
+            <span class="sidebar-icon">⭐</span>
+            <span>Premium</span>
+          </a>
+        </div>
+
+        <div class="sidebar-category">
+          <div class="sidebar-category-title">
+            <span>Anuncios</span>
+            <div class="category-line"></div>
+          </div>
+          <a href="/dashboard/${guildId}/bienvenida" class="sidebar-nav-item ${activePage === 'bienvenida' ? 'active' : ''}">
+            <span class="sidebar-icon">👋</span>
+            <span>Bienvenidas</span>
+          </a>
+          <a href="/dashboard/${guildId}/mejoras" class="sidebar-nav-item ${activePage === 'mejoras' ? 'active' : ''}">
+            <span class="sidebar-icon">🚀</span>
+            <span>Mejoras del server</span>
+          </a>
+          <a href="/dashboard/${guildId}/despedidas" class="sidebar-nav-item ${activePage === 'despedidas' ? 'active' : ''}">
+            <span class="sidebar-icon">👋</span>
+            <span>Despedidas</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+  `;
+}
+
 // 🌐 Página principal
 app.get("/", (req, res) => {
   const discordAuthUrl = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(
@@ -224,7 +274,6 @@ app.get("/dashboard/:guildId", async (req, res) => {
       ? `https://cdn.discordapp.com/icons/${guildId}/${guildData.icon}.png`
       : "/icono.png";
 
-    // Contar categorías (type 4)
     const categories = channels.filter(c => c.type === 4).length;
     const textChannels = channels.filter(c => c.type === 0).length;
 
@@ -242,28 +291,8 @@ app.get("/dashboard/:guildId", async (req, res) => {
         </div>
 
         <div class="dashboard-layout">
-          <!-- Sidebar -->
-          <aside class="dashboard-sidebar">
-            <div class="sidebar-header">
-              <img src="${icon}" alt="${guildData.name}" class="sidebar-server-icon">
-              <div class="sidebar-server-info">
-                <h3>${guildData.name}</h3>
-                <p>Panel de Control</p>
-              </div>
-            </div>
-            <nav class="sidebar-nav">
-              <a href="/dashboard/${guildId}" class="sidebar-nav-item active">
-                <span class="sidebar-icon">📊</span>
-                <span>Server</span>
-              </a>
-              <a href="/dashboard/${guildId}/bienvenida" class="sidebar-nav-item">
-                <span class="sidebar-icon">👋</span>
-                <span>Bienvenida</span>
-              </a>
-            </nav>
-          </aside>
+          ${generateSidebar(guildId, guildData.name, icon, 'server')}
 
-          <!-- Main Content -->
           <main class="dashboard-main">
             <div class="welcome-header">
               <div class="welcome-icon">📊</div>
@@ -361,21 +390,18 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
     const channels = await channelsResponse.json();
     const textChannels = channels.filter((c) => c.type === 0);
 
-    // 🔹 Obtener emojis del servidor
     const emojisResponse = await fetch(
       `https://discord.com/api/v10/guilds/${guildId}/emojis`,
       { headers: { Authorization: `Bot ${BOT_TOKEN}` } }
     );
     const emojis = await emojisResponse.json();
 
-    // 🔹 Obtener roles del servidor
     const rolesResponse = await fetch(
       `https://discord.com/api/v10/guilds/${guildId}/roles`,
       { headers: { Authorization: `Bot ${BOT_TOKEN}` } }
     );
     const roles = await rolesResponse.json();
 
-    // 🔹 Consultar datos existentes en Supabase
     const { data: bienvenida } = await supabase
       .from("bienvenidas")
       .select("*")
@@ -396,7 +422,6 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
       ? `https://cdn.discordapp.com/icons/${guildId}/${guildData.icon}.png`
       : "/icono.png";
 
-    // 🔹 Preparar data para JS
     const emojisData = JSON.stringify(emojis.map(e => ({ id: e.id, name: e.name, animated: e.animated })));
     const channelsData = JSON.stringify(textChannels.map(c => ({ id: c.id, name: c.name })));
     const rolesData = JSON.stringify(roles.filter(r => r.name !== '@everyone').map(r => ({ id: r.id, name: r.name, color: r.color })));
@@ -415,28 +440,8 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
         </div>
 
         <div class="dashboard-layout">
-          <!-- Sidebar -->
-          <aside class="dashboard-sidebar">
-            <div class="sidebar-header">
-              <img src="${icon}" alt="${guildData.name}" class="sidebar-server-icon">
-              <div class="sidebar-server-info">
-                <h3>${guildData.name}</h3>
-                <p>Panel de Control</p>
-              </div>
-            </div>
-            <nav class="sidebar-nav">
-              <a href="/dashboard/${guildId}" class="sidebar-nav-item">
-                <span class="sidebar-icon">📊</span>
-                <span>Server</span>
-              </a>
-              <a href="/dashboard/${guildId}/bienvenida" class="sidebar-nav-item active">
-                <span class="sidebar-icon">👋</span>
-                <span>Bienvenida</span>
-              </a>
-            </nav>
-          </aside>
+          ${generateSidebar(guildId, guildData.name, icon, 'bienvenida')}
 
-          <!-- Main Content -->
           <main class="dashboard-main">
             <div class="welcome-header">
               <div class="welcome-icon">🐉</div>
@@ -481,7 +486,6 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
                   </div>
                 </div>
 
-                <!-- Picker de Emojis -->
                 <div id="emojiPicker" class="picker-container" style="display: none;">
                   <div class="picker-header">
                     <span>Emojis del Servidor</span>
@@ -490,7 +494,6 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
                   <div class="picker-content" id="emojiList"></div>
                 </div>
 
-                <!-- Picker de Canales -->
                 <div id="channelPicker" class="picker-container" style="display: none;">
                   <div class="picker-header">
                     <span>Mencionar Canal</span>
@@ -499,7 +502,6 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
                   <div class="picker-content" id="channelList"></div>
                 </div>
 
-                <!-- Picker de Roles -->
                 <div id="rolePicker" class="picker-container" style="display: none;">
                   <div class="picker-header">
                     <span>Mencionar Rol</span>
@@ -533,13 +535,11 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
           const channels = ${channelsData};
           const roles = ${rolesData};
 
-          // Cargar emojis
           document.addEventListener('DOMContentLoaded', () => {
             const emojiList = document.getElementById('emojiList');
             const channelList = document.getElementById('channelList');
             const roleList = document.getElementById('roleList');
 
-            // Emojis
             if (emojis.length === 0) {
               emojiList.innerHTML = '<div class="picker-empty">No hay emojis personalizados</div>';
             } else {
@@ -556,7 +556,6 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
               });
             }
 
-            // Canales
             channels.forEach(channel => {
               const btn = document.createElement('button');
               btn.type = 'button';
@@ -566,7 +565,6 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
               channelList.appendChild(btn);
             });
 
-            // Roles
             roles.forEach(role => {
               const btn = document.createElement('button');
               btn.type = 'button';
