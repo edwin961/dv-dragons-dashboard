@@ -1,5 +1,5 @@
 // =======================================================
-// 🐉 DV Dragons Dashboard - Con sidebar y navegación completa
+// 🐉 DV Dragons Dashboard - Sistema Completo Mejorado
 // =======================================================
 
 require("dotenv").config();
@@ -20,7 +20,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Función helper para generar el sidebar
+// ========================================
+// 🔧 FUNCIÓN HELPER PARA GENERAR SIDEBAR
+// ========================================
 function generateSidebar(guildId, guildName, icon, activePage) {
   return `
     <aside class="dashboard-sidebar">
@@ -70,7 +72,9 @@ function generateSidebar(guildId, guildName, icon, activePage) {
   `;
 }
 
-// 🌐 Página principal
+// ========================================
+// 🌐 PÁGINA PRINCIPAL
+// ========================================
 app.get("/", (req, res) => {
   const discordAuthUrl = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(
     REDIRECT_URI
@@ -95,17 +99,25 @@ app.get("/", (req, res) => {
 
       <div class="hero">
         <div class="hero-content">
-          <h1>Administra tu Servidor</h1>
-          <p>Gestiona DV Dragons Bot de manera simple y eficiente.</p>
-          <a href="${discordAuthUrl}" class="discord-button">Iniciar sesión con Discord</a>
+          <h1>🐉 Administra tu Servidor</h1>
+          <p>Gestiona DV Dragons Bot de manera épica con nuestro panel de control dragonil.</p>
+          <a href="${discordAuthUrl}" class="discord-button">
+            🔥 Iniciar sesión con Discord
+          </a>
         </div>
       </div>
+
+      <footer class="footer">
+        <p>© 2025 DV Dragons Bot. Todos los derechos reservados.</p>
+      </footer>
     </body>
     </html>
   `);
 });
 
-// 🔑 Callback OAuth
+// ========================================
+// 🔑 CALLBACK OAUTH
+// ========================================
 app.get("/callback", async (req, res) => {
   const code = req.query.code;
   if (!code) return res.status(400).send("⚠️ Falta el código de autorización.");
@@ -155,7 +167,9 @@ app.get("/callback", async (req, res) => {
   }
 });
 
-// 🧭 Lista de servidores
+// ========================================
+// 🧭 LISTA DE SERVIDORES
+// ========================================
 app.get("/servers", async (req, res) => {
   const accessToken = req.cookies.access_token;
   const username = req.cookies.user_name;
@@ -190,14 +204,14 @@ app.get("/servers", async (req, res) => {
                   : "/icono.png";
                 const isBotInGuild = botGuildIds.includes(g.id);
                 const actionButton = isBotInGuild
-                  ? `<a href="/dashboard/${g.id}" class="server-modern-btn">IR</a>`
-                  : `<a href="https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&permissions=8&scope=bot%20applications.commands&guild_id=${g.id}" class="server-modern-btn invite">+</a>`;
+                  ? `<a href="/dashboard/${g.id}" class="server-modern-btn">🚀 IR</a>`
+                  : `<a href="https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&permissions=8&scope=bot%20applications.commands&guild_id=${g.id}" class="server-modern-btn invite">➕ INVITAR</a>`;
                 return `
                   <div class="server-card-modern">
                     <img class="server-modern-icon" src="${icon}" alt="${g.name}" />
                     <div class="server-modern-info">
                       <h3>${g.name}</h3>
-                      <p>${g.owner ? "Owner" : "Admin"}</p>
+                      <p>${g.owner ? "👑 Owner" : "⚔️ Admin"}</p>
                     </div>
                     ${actionButton}
                   </div>
@@ -205,7 +219,7 @@ app.get("/servers", async (req, res) => {
               })
               .join("")}
           </div>`
-        : `<div class="empty-state"><p>No tienes servidores administrables.</p></div>`;
+        : `<div class="empty-state"><p>🐉 No tienes servidores administrables.</p></div>`;
 
     res.send(`
       <!DOCTYPE html>
@@ -226,18 +240,21 @@ app.get("/servers", async (req, res) => {
             </div>
             <div class="user-details">
               <span class="user-name">${username}</span>
-              <span class="user-role">Administrador</span>
+              <span class="user-role">🐉 Domador de Dragones</span>
             </div>
           </div>
         </div>
         <div class="dashboard-container">
-          <h1>Manejar servidores</h1>
+          <h1>🔥 Manejar Servidores</h1>
           ${guildListHTML}
           <div class="refresh-container">
-            <button class="refresh-btn" onclick="window.location.reload()">↻ Actualizar lista</button>
+            <p>¿No ves tu servidor?</p>
+            <button class="refresh-btn" onclick="window.location.reload()">
+              🔄 Actualizar lista
+            </button>
           </div>
         </div>
-        <footer class="footer"><p>© 2025 DV Dragons Bot.</p></footer>
+        <footer class="footer"><p>© 2025 DV Dragons Bot. Todos los derechos reservados.</p></footer>
       </body>
       </html>
     `);
@@ -247,7 +264,9 @@ app.get("/servers", async (req, res) => {
   }
 });
 
-// ⚙️ Dashboard principal con sidebar - Vista Overview (Server)
+// ========================================
+// ⚙️ DASHBOARD PRINCIPAL - VISTA SERVER
+// ========================================
 app.get("/dashboard/:guildId", async (req, res) => {
   const { guildId } = req.params;
 
@@ -295,9 +314,9 @@ app.get("/dashboard/:guildId", async (req, res) => {
 
           <main class="dashboard-main">
             <div class="welcome-header">
-              <div class="welcome-icon">📊</div>
+              <div class="welcome-icon">🐉</div>
               <h1>Resumen del Servidor</h1>
-              <p class="welcome-subtitle">Estadísticas rápidas sobre tu servidor de Discord</p>
+              <p class="welcome-subtitle">Estadísticas épicas de ${guildData.name}</p>
             </div>
 
             <div class="server-overview">
@@ -342,13 +361,13 @@ app.get("/dashboard/:guildId", async (req, res) => {
               <h3>🆔 ID del Servidor</h3>
               <div class="server-id-display">
                 <code id="serverId">${guildId}</code>
-                <button class="copy-btn" onclick="copyServerId()">Copiar</button>
+                <button class="copy-btn" onclick="copyServerId()">📋 Copiar</button>
               </div>
             </div>
           </main>
         </div>
 
-        <footer class="footer"><p>© 2025 DV Dragons Bot.</p></footer>
+        <footer class="footer"><p>© 2025 DV Dragons Bot. Todos los derechos reservados.</p></footer>
 
         <script>
           function copyServerId() {
@@ -356,7 +375,7 @@ app.get("/dashboard/:guildId", async (req, res) => {
             navigator.clipboard.writeText(text).then(() => {
               const btn = document.querySelector('.copy-btn');
               const originalText = btn.textContent;
-              btn.textContent = '✓ Copiado';
+              btn.textContent = '✅ ¡Copiado!';
               setTimeout(() => {
                 btn.textContent = originalText;
               }, 2000);
@@ -372,7 +391,9 @@ app.get("/dashboard/:guildId", async (req, res) => {
   }
 });
 
-// ⚙️ Dashboard - Sección Bienvenida
+// ========================================
+// 🎉 DASHBOARD - SECCIÓN BIENVENIDA
+// ========================================
 app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
   const { guildId } = req.params;
 
@@ -414,7 +435,7 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
         (c) =>
           `<option value="${c.id}" ${
             c.id === current.canal_id ? "selected" : ""
-          }> #${c.name}</option>`
+          }>#${c.name}</option>`
       )
       .join("");
 
@@ -444,9 +465,9 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
 
           <main class="dashboard-main">
             <div class="welcome-header">
-              <div class="welcome-icon">🐉</div>
+              <div class="welcome-icon">🎉</div>
               <h1>Configuración de Bienvenida</h1>
-              <p class="welcome-subtitle">${guildData.name}</p>
+              <p class="welcome-subtitle">Dale la bienvenida épica que tus miembros merecen</p>
             </div>
             
             <div class="form-card-enhanced">
@@ -456,14 +477,16 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
                   Canal de Bienvenida
                 </label>
                 <select id="channel" class="form-select">${channelOptions}</select>
+                <span class="form-hint">Selecciona el canal donde se enviarán los mensajes de bienvenida cuando alguien se una al servidor.</span>
               </div>
 
               <div class="form-section">
                 <label class="form-label">
                   <span class="label-icon">✨</span>
-                  Encabezado
+                  Encabezado del Mensaje
                 </label>
                 <input id="header" type="text" class="form-input" value="${current.encabezado || ""}" placeholder="Ej: ¡Bienvenido a ${guildData.name}!">
+                <span class="form-hint">Este será el título principal del mensaje de bienvenida. Hazlo atractivo y acogedor.</span>
               </div>
 
               <div class="form-section">
@@ -474,13 +497,13 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
                 <div class="textarea-container">
                   <textarea id="message" rows="5" class="form-textarea" placeholder="Escribe un mensaje cálido para los nuevos miembros...">${current.texto || ""}</textarea>
                   <div class="textarea-toolbar">
-                    <button type="button" class="toolbar-btn" onclick="togglePicker('emoji')" title="Emojis del servidor">
+                    <button type="button" class="toolbar-btn" onclick="togglePicker('emoji')" title="Agregar emojis del servidor">
                       😀
                     </button>
-                    <button type="button" class="toolbar-btn" onclick="togglePicker('channel')" title="Mencionar canal">
+                    <button type="button" class="toolbar-btn" onclick="togglePicker('channel')" title="Mencionar un canal">
                       #
                     </button>
-                    <button type="button" class="toolbar-btn" onclick="togglePicker('role')" title="Mencionar rol">
+                    <button type="button" class="toolbar-btn" onclick="togglePicker('role')" title="Mencionar un rol">
                       @
                     </button>
                   </div>
@@ -488,7 +511,7 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
 
                 <div id="emojiPicker" class="picker-container" style="display: none;">
                   <div class="picker-header">
-                    <span>Emojis del Servidor</span>
+                    <span>🎭 Emojis del Servidor</span>
                     <button type="button" onclick="closePicker('emoji')" class="picker-close">✕</button>
                   </div>
                   <div class="picker-content" id="emojiList"></div>
@@ -496,7 +519,7 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
 
                 <div id="channelPicker" class="picker-container" style="display: none;">
                   <div class="picker-header">
-                    <span>Mencionar Canal</span>
+                    <span>📢 Mencionar Canal</span>
                     <button type="button" onclick="closePicker('channel')" class="picker-close">✕</button>
                   </div>
                   <div class="picker-content" id="channelList"></div>
@@ -504,31 +527,33 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
 
                 <div id="rolePicker" class="picker-container" style="display: none;">
                   <div class="picker-header">
-                    <span>Mencionar Rol</span>
+                    <span>🎭 Mencionar Rol</span>
                     <button type="button" onclick="closePicker('role')" class="picker-close">✕</button>
                   </div>
                   <div class="picker-content" id="roleList"></div>
                 </div>
+                
+                <span class="form-hint">Personaliza tu mensaje con emojis, menciones de canales y roles usando los botones de arriba. Puedes usar variables como {user} para mencionar al nuevo miembro.</span>
               </div>
 
               <div class="form-section">
                 <label class="form-label">
                   <span class="label-icon">🖼️</span>
-                  GIF o Imagen
+                  GIF o Imagen de Bienvenida
                 </label>
-                <input id="gif" type="text" class="form-input" value="${current.gif || ""}" placeholder="https://ejemplo.com/imagen.gif">
-                <span class="form-hint">URL de una imagen o GIF para acompañar el mensaje</span>
+                <input id="gif" type="text" class="form-input" value="${current.gif || ""}" placeholder="https://ejemplo.com/imagen-epica.gif">
+                <span class="form-hint">Añade la URL de un GIF o imagen para hacer tu mensaje más visual y atractivo. Asegúrate de que sea una URL válida (https://).</span>
               </div>
 
               <button class="save-btn-enhanced" onclick="guardar()">
-                <span class="btn-icon">💾</span>
-                Guardar Configuración
+                <span class="btn-icon">🔥</span>
+                Guardar Configuración Dragonil
               </button>
             </div>
           </main>
         </div>
 
-        <footer class="footer"><p>© 2025 DV Dragons Bot.</p></footer>
+        <footer class="footer"><p>© 2025 DV Dragons Bot. Todos los derechos reservados.</p></footer>
 
         <script>
           const emojis = ${emojisData};
@@ -541,7 +566,7 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
             const roleList = document.getElementById('roleList');
 
             if (emojis.length === 0) {
-              emojiList.innerHTML = '<div class="picker-empty">No hay emojis personalizados</div>';
+              emojiList.innerHTML = '<div class="picker-empty">🐉 No hay emojis personalizados en este servidor</div>';
             } else {
               emojis.forEach(emoji => {
                 const btn = document.createElement('button');
@@ -609,7 +634,7 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
           async function guardar() {
             const btn = document.querySelector('.save-btn-enhanced');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<span class="btn-icon">⏳</span> Guardando...';
+            btn.innerHTML = '<span class="btn-icon">⏳</span> Guardando configuración...';
             btn.disabled = true;
             
             const body = {
@@ -628,20 +653,20 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
               });
               const result = await res.json();
               
-              btn.innerHTML = '<span class="btn-icon">✅</span> ¡Guardado!';
+              btn.innerHTML = '<span class="btn-icon">✅</span> ¡Configuración guardada!';
               setTimeout(() => {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
-              }, 2000);
+              }, 2500);
               
-              alert(result.message || "✅ Configuración guardada.");
+              alert("🐉 " + (result.message || "¡Configuración guardada exitosamente!"));
             } catch (error) {
-              btn.innerHTML = '<span class="btn-icon">❌</span> Error';
+              btn.innerHTML = '<span class="btn-icon">❌</span> Error al guardar';
               setTimeout(() => {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
-              }, 2000);
-              alert("Error al guardar la configuración");
+              }, 2500);
+              alert("❌ Error al guardar la configuración. Inténtalo de nuevo.");
             }
           }
         </script>
@@ -650,11 +675,13 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
     `);
   } catch (err) {
     console.error(err);
-    res.status(500).send("Error al cargar dashboard.");
+    res.status(500).send("Error al cargar dashboard de bienvenida.");
   }
 });
 
-// 🧩 Guardar configuración en Supabase
+// ========================================
+// 💾 GUARDAR CONFIGURACIÓN EN SUPABASE
+// ========================================
 app.post("/api/save-welcome", async (req, res) => {
   const { guild_id, canal_id, encabezado, texto, gif } = req.body;
   try {
@@ -669,9 +696,10 @@ app.post("/api/save-welcome", async (req, res) => {
     res.json({ message: "✅ Configuración guardada correctamente." });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "❌ Error al guardar." });
+    res.status(500).json({ message: "❌ Error al guardar la configuración." });
   }
 });
 
-// 🚀 Servidor online
+// ========================================
+// 🚀
 app.listen(PORT, () => console.log(`✅ Servidor activo en http://localhost:${PORT}`));
