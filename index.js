@@ -1,5 +1,5 @@
 // =======================================================
-// 🐉 DV Dragons Dashboard - Con sesión, avatar y bienvenida real + Supabase
+// 🐉 DV Dragons Dashboard - Con sidebar y navegación completa
 // =======================================================
 
 require("dotenv").config();
@@ -197,8 +197,154 @@ app.get("/servers", async (req, res) => {
   }
 });
 
-// ⚙️ Dashboard individual — carga y guarda en Supabase
+// ⚙️ Dashboard principal con sidebar - Vista Overview (Server)
 app.get("/dashboard/:guildId", async (req, res) => {
+  const { guildId } = req.params;
+
+  try {
+    const guildResponse = await fetch(`https://discord.com/api/v10/guilds/${guildId}`, {
+      headers: { Authorization: `Bot ${BOT_TOKEN}` },
+    });
+    const guildData = await guildResponse.json();
+    if (guildData.message === "Unknown Guild") return res.send("❌ El bot no está en este servidor.");
+
+    const channelsResponse = await fetch(
+      `https://discord.com/api/v10/guilds/${guildId}/channels`,
+      { headers: { Authorization: `Bot ${BOT_TOKEN}` } }
+    );
+    const channels = await channelsResponse.json();
+
+    const rolesResponse = await fetch(
+      `https://discord.com/api/v10/guilds/${guildId}/roles`,
+      { headers: { Authorization: `Bot ${BOT_TOKEN}` } }
+    );
+    const roles = await rolesResponse.json();
+
+    const icon = guildData.icon
+      ? `https://cdn.discordapp.com/icons/${guildId}/${guildData.icon}.png`
+      : "/icono.png";
+
+    // Contar categorías (type 4)
+    const categories = channels.filter(c => c.type === 4).length;
+    const textChannels = channels.filter(c => c.type === 0).length;
+
+    res.send(`
+      <!DOCTYPE html>
+      <html lang="es">
+      <head>
+        <meta charset="UTF-8">
+        <title>${guildData.name} - Dashboard</title>
+        <link rel="stylesheet" href="/styles.css">
+      </head>
+      <body>
+        <div class="navbar">
+          <a href="/servers" class="logo"><img src="/icono.png"><span>DV Dragons Bot</span></a>
+        </div>
+
+        <div class="dashboard-layout">
+          <!-- Sidebar -->
+          <aside class="dashboard-sidebar">
+            <div class="sidebar-header">
+              <img src="${icon}" alt="${guildData.name}" class="sidebar-server-icon">
+              <div class="sidebar-server-info">
+                <h3>${guildData.name}</h3>
+                <p>Panel de Control</p>
+              </div>
+            </div>
+            <nav class="sidebar-nav">
+              <a href="/dashboard/${guildId}" class="sidebar-nav-item active">
+                <span class="sidebar-icon">📊</span>
+                <span>Server</span>
+              </a>
+              <a href="/dashboard/${guildId}/bienvenida" class="sidebar-nav-item">
+                <span class="sidebar-icon">👋</span>
+                <span>Bienvenida</span>
+              </a>
+            </nav>
+          </aside>
+
+          <!-- Main Content -->
+          <main class="dashboard-main">
+            <div class="welcome-header">
+              <div class="welcome-icon">📊</div>
+              <h1>Resumen del Servidor</h1>
+              <p class="welcome-subtitle">Estadísticas rápidas sobre tu servidor de Discord</p>
+            </div>
+
+            <div class="server-overview">
+              <div class="stat-card">
+                <div class="stat-card-header">
+                  <span class="stat-label">Miembros</span>
+                  <span class="stat-icon">👥</span>
+                </div>
+                <div class="stat-value">${guildData.approximate_member_count || 'N/A'}</div>
+                <div class="stat-description">Total de miembros</div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-card-header">
+                  <span class="stat-label">Categorías</span>
+                  <span class="stat-icon">📁</span>
+                </div>
+                <div class="stat-value">${categories}</div>
+                <div class="stat-description">Categorías creadas</div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-card-header">
+                  <span class="stat-label">Canales</span>
+                  <span class="stat-icon">💬</span>
+                </div>
+                <div class="stat-value">${textChannels}</div>
+                <div class="stat-description">Canales de texto</div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-card-header">
+                  <span class="stat-label">Roles</span>
+                  <span class="stat-icon">🎭</span>
+                </div>
+                <div class="stat-value">${roles.length}</div>
+                <div class="stat-description">Roles configurados</div>
+              </div>
+            </div>
+
+            <div class="server-id-section">
+              <h3>🆔 ID del Servidor</h3>
+              <div class="server-id-display">
+                <code id="serverId">${guildId}</code>
+                <button class="copy-btn" onclick="copyServerId()">Copiar</button>
+              </div>
+            </div>
+          </main>
+        </div>
+
+        <footer class="footer"><p>© 2025 DV Dragons Bot.</p></footer>
+
+        <script>
+          function copyServerId() {
+            const text = document.getElementById('serverId').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+              const btn = document.querySelector('.copy-btn');
+              const originalText = btn.textContent;
+              btn.textContent = '✓ Copiado';
+              setTimeout(() => {
+                btn.textContent = originalText;
+              }, 2000);
+            });
+          }
+        </script>
+      </body>
+      </html>
+    `);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error al cargar dashboard.");
+  }
+});
+
+// ⚙️ Dashboard - Sección Bienvenida
+app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
   const { guildId } = req.params;
 
   try {
@@ -246,6 +392,10 @@ app.get("/dashboard/:guildId", async (req, res) => {
       )
       .join("");
 
+    const icon = guildData.icon
+      ? `https://cdn.discordapp.com/icons/${guildId}/${guildData.icon}.png`
+      : "/icono.png";
+
     // 🔹 Preparar data para JS
     const emojisData = JSON.stringify(emojis.map(e => ({ id: e.id, name: e.name, animated: e.animated })));
     const channelsData = JSON.stringify(textChannels.map(c => ({ id: c.id, name: c.name })));
@@ -260,94 +410,123 @@ app.get("/dashboard/:guildId", async (req, res) => {
         <link rel="stylesheet" href="/styles.css">
       </head>
       <body>
-        <div class="navbar"><a href="/servers" class="logo"><img src="/icono.png"><span>DV Dragons Bot</span></a></div>
-        <div class="dashboard-container">
-          <div class="welcome-header">
-            <div class="welcome-icon">🐉</div>
-            <h1>Configuración de Bienvenida</h1>
-            <p class="welcome-subtitle">${guildData.name}</p>
-          </div>
-          
-          <div class="form-card-enhanced">
-            <div class="form-section">
-              <label class="form-label">
-                <span class="label-icon">📢</span>
-                Canal de Bienvenida
-              </label>
-              <select id="channel" class="form-select">${channelOptions}</select>
-            </div>
-
-            <div class="form-section">
-              <label class="form-label">
-                <span class="label-icon">✨</span>
-                Encabezado
-              </label>
-              <input id="header" type="text" class="form-input" value="${current.encabezado || ""}" placeholder="Ej: ¡Bienvenido a ${guildData.name}!">
-            </div>
-
-            <div class="form-section">
-              <label class="form-label">
-                <span class="label-icon">💬</span>
-                Mensaje de Bienvenida
-              </label>
-              <div class="textarea-container">
-                <textarea id="message" rows="5" class="form-textarea" placeholder="Escribe un mensaje cálido para los nuevos miembros...">${current.texto || ""}</textarea>
-                <div class="textarea-toolbar">
-                  <button type="button" class="toolbar-btn" onclick="togglePicker('emoji')" title="Emojis del servidor">
-                    😀
-                  </button>
-                  <button type="button" class="toolbar-btn" onclick="togglePicker('channel')" title="Mencionar canal">
-                    #
-                  </button>
-                  <button type="button" class="toolbar-btn" onclick="togglePicker('role')" title="Mencionar rol">
-                    @
-                  </button>
-                </div>
-              </div>
-
-              <!-- Picker de Emojis -->
-              <div id="emojiPicker" class="picker-container" style="display: none;">
-                <div class="picker-header">
-                  <span>Emojis del Servidor</span>
-                  <button type="button" onclick="closePicker('emoji')" class="picker-close">✕</button>
-                </div>
-                <div class="picker-content" id="emojiList"></div>
-              </div>
-
-              <!-- Picker de Canales -->
-              <div id="channelPicker" class="picker-container" style="display: none;">
-                <div class="picker-header">
-                  <span>Mencionar Canal</span>
-                  <button type="button" onclick="closePicker('channel')" class="picker-close">✕</button>
-                </div>
-                <div class="picker-content" id="channelList"></div>
-              </div>
-
-              <!-- Picker de Roles -->
-              <div id="rolePicker" class="picker-container" style="display: none;">
-                <div class="picker-header">
-                  <span>Mencionar Rol</span>
-                  <button type="button" onclick="closePicker('role')" class="picker-close">✕</button>
-                </div>
-                <div class="picker-content" id="roleList"></div>
-              </div>
-            </div>
-
-            <div class="form-section">
-              <label class="form-label">
-                <span class="label-icon">🖼️</span>
-                GIF o Imagen
-              </label>
-              <input id="gif" type="text" class="form-input" value="${current.gif || ""}" placeholder="https://ejemplo.com/imagen.gif">
-              <span class="form-hint">URL de una imagen o GIF para acompañar el mensaje</span>
-            </div>
-
-            <button class="save-btn-enhanced" onclick="guardar()">
-              <span class="btn-icon">💾</span>
-              Guardar Configuración
-            </button>
-          </div>
+        <div class="navbar">
+          <a href="/servers" class="logo"><img src="/icono.png"><span>DV Dragons Bot</span></a>
         </div>
+
+        <div class="dashboard-layout">
+          <!-- Sidebar -->
+          <aside class="dashboard-sidebar">
+            <div class="sidebar-header">
+              <img src="${icon}" alt="${guildData.name}" class="sidebar-server-icon">
+              <div class="sidebar-server-info">
+                <h3>${guildData.name}</h3>
+                <p>Panel de Control</p>
+              </div>
+            </div>
+            <nav class="sidebar-nav">
+              <a href="/dashboard/${guildId}" class="sidebar-nav-item">
+                <span class="sidebar-icon">📊</span>
+                <span>Server</span>
+              </a>
+              <a href="/dashboard/${guildId}/bienvenida" class="sidebar-nav-item active">
+                <span class="sidebar-icon">👋</span>
+                <span>Bienvenida</span>
+              </a>
+            </nav>
+          </aside>
+
+          <!-- Main Content -->
+          <main class="dashboard-main">
+            <div class="welcome-header">
+              <div class="welcome-icon">🐉</div>
+              <h1>Configuración de Bienvenida</h1>
+              <p class="welcome-subtitle">${guildData.name}</p>
+            </div>
+            
+            <div class="form-card-enhanced">
+              <div class="form-section">
+                <label class="form-label">
+                  <span class="label-icon">📢</span>
+                  Canal de Bienvenida
+                </label>
+                <select id="channel" class="form-select">${channelOptions}</select>
+              </div>
+
+              <div class="form-section">
+                <label class="form-label">
+                  <span class="label-icon">✨</span>
+                  Encabezado
+                </label>
+                <input id="header" type="text" class="form-input" value="${current.encabezado || ""}" placeholder="Ej: ¡Bienvenido a ${guildData.name}!">
+              </div>
+
+              <div class="form-section">
+                <label class="form-label">
+                  <span class="label-icon">💬</span>
+                  Mensaje de Bienvenida
+                </label>
+                <div class="textarea-container">
+                  <textarea id="message" rows="5" class="form-textarea" placeholder="Escribe un mensaje cálido para los nuevos miembros...">${current.texto || ""}</textarea>
+                  <div class="textarea-toolbar">
+                    <button type="button" class="toolbar-btn" onclick="togglePicker('emoji')" title="Emojis del servidor">
+                      😀
+                    </button>
+                    <button type="button" class="toolbar-btn" onclick="togglePicker('channel')" title="Mencionar canal">
+                      #
+                    </button>
+                    <button type="button" class="toolbar-btn" onclick="togglePicker('role')" title="Mencionar rol">
+                      @
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Picker de Emojis -->
+                <div id="emojiPicker" class="picker-container" style="display: none;">
+                  <div class="picker-header">
+                    <span>Emojis del Servidor</span>
+                    <button type="button" onclick="closePicker('emoji')" class="picker-close">✕</button>
+                  </div>
+                  <div class="picker-content" id="emojiList"></div>
+                </div>
+
+                <!-- Picker de Canales -->
+                <div id="channelPicker" class="picker-container" style="display: none;">
+                  <div class="picker-header">
+                    <span>Mencionar Canal</span>
+                    <button type="button" onclick="closePicker('channel')" class="picker-close">✕</button>
+                  </div>
+                  <div class="picker-content" id="channelList"></div>
+                </div>
+
+                <!-- Picker de Roles -->
+                <div id="rolePicker" class="picker-container" style="display: none;">
+                  <div class="picker-header">
+                    <span>Mencionar Rol</span>
+                    <button type="button" onclick="closePicker('role')" class="picker-close">✕</button>
+                  </div>
+                  <div class="picker-content" id="roleList"></div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <label class="form-label">
+                  <span class="label-icon">🖼️</span>
+                  GIF o Imagen
+                </label>
+                <input id="gif" type="text" class="form-input" value="${current.gif || ""}" placeholder="https://ejemplo.com/imagen.gif">
+                <span class="form-hint">URL de una imagen o GIF para acompañar el mensaje</span>
+              </div>
+
+              <button class="save-btn-enhanced" onclick="guardar()">
+                <span class="btn-icon">💾</span>
+                Guardar Configuración
+              </button>
+            </div>
+          </main>
+        </div>
+
+        <footer class="footer"><p>© 2025 DV Dragons Bot.</p></footer>
 
         <script>
           const emojis = ${emojisData};
