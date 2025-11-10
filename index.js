@@ -520,6 +520,18 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
                 <span class="form-hint">URL de una imagen o GIF para acompañar el mensaje</span>
               </div>
 
+              <div class="form-section">
+                <label class="form-label">
+                  <span class="label-icon">🎨</span>
+                  Color del Embed
+                </label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                  <input id="color" type="text" class="form-input" value="${current.color || '0099ff'}" placeholder="4169e1" maxlength="7" style="flex: 1;">
+                  <input id="colorPreview" type="color" value="#${current.color || '0099ff'}" style="width: 50px; height: 40px; border: none; border-radius: 8px; cursor: pointer;">
+                </div>
+                <span class="form-hint">Formato hexadecimal (con o sin #). Ejemplo: #4169e1 o 4169e1</span>
+              </div>
+
               <button class="save-btn-enhanced" onclick="guardar()">
                 <span class="btn-icon">💾</span>
                 Guardar Configuración
@@ -574,6 +586,21 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
               btn.onclick = () => insertText(\`<@&\${role.id}>\`);
               roleList.appendChild(btn);
             });
+
+            // Sincronizar input de texto con color picker
+            const colorInput = document.getElementById('color');
+            const colorPreview = document.getElementById('colorPreview');
+
+            colorInput.addEventListener('input', function() {
+              let colorValue = this.value.replace('#', '');
+              if (colorValue.length === 6 && /^[0-9A-Fa-f]{6}$/.test(colorValue)) {
+                colorPreview.value = '#' + colorValue;
+              }
+            });
+
+            colorPreview.addEventListener('input', function() {
+              colorInput.value = this.value.replace('#', '');
+            });
           });
 
           function togglePicker(type) {
@@ -609,6 +636,14 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
           async function guardar() {
             const btn = document.querySelector('.save-btn-enhanced');
             const originalText = btn.innerHTML;
+            
+            // Validar color
+            const colorValue = document.getElementById('color').value.replace('#', '');
+            if (colorValue.length !== 6 || !/^[0-9A-Fa-f]{6}$/.test(colorValue)) {
+              alert('❌ Color inválido. Usa formato hexadecimal (ejemplo: #4169e1 o 4169e1)');
+              return;
+            }
+            
             btn.innerHTML = '<span class="btn-icon">⏳</span> Guardando...';
             btn.disabled = true;
             
@@ -617,7 +652,8 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
               canal_id: document.getElementById('channel').value,
               encabezado: document.getElementById('header').value,
               texto: document.getElementById('message').value,
-              gif: document.getElementById('gif').value
+              gif: document.getElementById('gif').value,
+              color: colorValue
             };
             
             try {
@@ -656,7 +692,7 @@ app.get("/dashboard/:guildId/bienvenida", async (req, res) => {
 
 // 🧩 Guardar configuración en Supabase
 app.post("/api/save-welcome", async (req, res) => {
-  const { guild_id, canal_id, encabezado, texto, gif } = req.body;
+  const { guild_id, canal_id, encabezado, texto, gif, color } = req.body;
   try {
     await supabase.from("bienvenidas").upsert({
       guild_id,
@@ -664,6 +700,7 @@ app.post("/api/save-welcome", async (req, res) => {
       encabezado,
       texto,
       gif,
+      color,
       updated_at: new Date(),
     });
     res.json({ message: "✅ Configuración guardada correctamente." });
